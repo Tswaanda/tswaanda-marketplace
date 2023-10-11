@@ -11,6 +11,7 @@ import {
 // Components
 import { Navbar, Footer, Loader } from "./components";
 import { useSelector, useDispatch } from 'react-redux'
+import HSCodes from './components/Documentation/HSCodes';
 
 // Pages
 const Home = lazy(() => import('./pages/Home'));
@@ -20,8 +21,9 @@ const Market = lazy(() => import('./pages/Market'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 const Product = lazy(() => import('./pages/Product'));
 const Services = lazy(() => import('./pages/Services'));
-const Support = lazy(() => import ('./pages/Support'))
-const VerifyEmail = lazy(() => import ('./pages/VerifyEmail'))
+const Support = lazy(() => import ('./pages/Support'));
+const VerifyEmail = lazy(() => import ('./pages/VerifyEmail'));
+const Documentation = lazy(() => import('./pages/Documentation'));
 
 import { UserContext } from "./UserContext";
 
@@ -176,6 +178,22 @@ const App = () => {
                       <div className={`${styles.paddingX} ${styles.flexStart}`}>
                         <div className={`${styles.boxWidth}`}>
                           <VerifyNewsLetterEmail />
+                        </div>
+                      </div>
+                    } 
+                  />
+                  <Route path="documentation" element={
+                      <div className={`${styles.paddingX} ${styles.flexStart}`}>
+                        <div className={`${styles.boxWidth}`}>
+                          <Documentation />
+                        </div>
+                      </div>
+                    } 
+                  />
+                  <Route path="hscodes" element={
+                      <div className={`${styles.paddingX} ${styles.flexStart}`}>
+                        <div className={`${styles.boxWidth}`}>
+                          <HSCodes />
                         </div>
                       </div>
                     } 

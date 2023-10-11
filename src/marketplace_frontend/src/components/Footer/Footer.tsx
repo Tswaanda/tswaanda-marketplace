@@ -26,7 +26,7 @@ const navigation = {
   ],
   support: [
     { name: "Pricing", href: "#" },
-    { name: "Documentation", href: "#" },
+    { name: "Documentation", href: "/documentation" },
     { name: "Guides", href: "#" },
     { name: "API Status", href: "#" },
   ],
