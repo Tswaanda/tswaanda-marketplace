@@ -424,6 +424,42 @@ export default function Product() {
                     </button>
                   </div>
                 )}
+                <div className="mt-3 flex flex-between space-x-3">
+                  <FacebookShareButton
+                    url={'https://www.tswaanda.com'}
+                    quote={'I got my fresh produce from Tswaanda!'}
+                    hashtag="#BuyFromTswaanda"
+                  >
+                    <FacebookIcon size={32} round />
+                  </FacebookShareButton>
+
+                  <TwitterShareButton
+                    url={'https://www.tswaanda.com'}
+                    title="I got my fresh produce from Tswaanda."
+                    hashtags={['ReliableProduce', 'TswaandaProduce', 'SupportingAfricaFarmers']}
+                  >
+                    <TwitterIcon size={32} round />
+                  </TwitterShareButton>
+
+                  <LinkedinShareButton
+                    url={"https://www.tswaanda.com"}
+                    title="Buy your farm produce from Tswaanda"
+                    summary="Get your products from a reliable marketplace that is supporting farmers in Africa."
+                  >
+                    <LinkedinIcon size={32} round />
+                  </LinkedinShareButton>
+
+                  <EmailShareButton
+                    url={"https://www.tswaanda.com"}
+                    subject="Tswaanda Product"
+                    body="Please find attached below the product from Tswaanda Marketplace."
+                    separator=" "
+                  >
+                    <EmailIcon size={32} round />
+                  </EmailShareButton>
+                </div>
+                
+
               </div>
 
               <section aria-labelledby="details-heading" className="mt-12">
