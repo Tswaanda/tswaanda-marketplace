@@ -16,6 +16,17 @@ import ToolTip from "../components/ToolTip";
 import { useAuth } from "../components/ContextWrapper";
 import { ThreeCircles } from "react-loader-spinner";
 
+import { 
+  FacebookIcon, 
+  FacebookShareButton, 
+  TwitterShareButton, 
+  TwitterIcon, 
+  LinkedinShareButton, 
+  LinkedinIcon,
+  EmailShareButton, 
+  EmailIcon
+} from 'react-share';
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -247,6 +258,7 @@ export default function Product() {
       setAddingToFav(false);
     }
   };
+  
 
   return (
     <div className="bg-white">
@@ -420,10 +432,46 @@ export default function Product() {
                       onClick={handleGoToCart}
                       className="flex max-w-xs gap-3 flex-1 items-center justify-center rounded-md border border-transparent bg-primary py-3 px-8 text-base font-medium text-white hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-gray-50 sm:w-full"
                     >
-                      <span> Go to Cart</span>
+                      <span>Go to Cart</span> 
                     </button>
                   </div>
                 )}
+                <div className="mt-3 flex flex-between space-x-3">
+                  <FacebookShareButton
+                    url={'https://www.tswaanda.com'}
+                    quote={'I got my fresh produce from Tswaanda!'}
+                    hashtag="#BuyFromTswaanda"
+                  >
+                    <FacebookIcon size={32} round />
+                  </FacebookShareButton>
+
+                  <TwitterShareButton
+                    url={'https://www.tswaanda.com'}
+                    title="I got my fresh produce from Tswaanda."
+                    hashtags={['#ReliableProduce #TswaandaProduce']}
+                  >
+                    <TwitterIcon size={32} round />
+                  </TwitterShareButton>
+
+                  <LinkedinShareButton
+                    url={"https://www.tswaanda.com"}
+                    title="Buy your farm produce from Tswaanda"
+                    summary="Get your products from a reliable marketplace that is supporting farmers in Africa."
+                  >
+                    <LinkedinIcon size={32} round />
+                  </LinkedinShareButton>
+
+                  <EmailShareButton
+                    url={"https://www.tswaanda.com"}
+                    subject="Tswaanda Product"
+                    body="Please find attached below the product from Tswaanda Marketplace."
+                    separator=" "
+                  >
+                    <EmailIcon size={32} round />
+                  </EmailShareButton>
+                </div>
+                
+
               </div>
 
               <section aria-labelledby="details-heading" className="mt-12">
@@ -432,6 +480,51 @@ export default function Product() {
                 </h2>
 
                 <div className="divide-y divide-gray-200 border-t">
+
+                  <Disclosure as="div">
+                    {({ open }) => (
+                      <>
+                        <h3>
+                          <Disclosure.Button className="group relative flex w-full items-center justify-between py-6 text-left">
+                            <span
+                              className={classNames(
+                                open ? "text-green-700" : "text-gray-900",
+                                " font-medium"
+                              )}
+                            >
+                              Product Details
+                            </span>
+                            <span className="ml-6 flex items-center">
+                              {open ? (
+                                <MinusIcon
+                                  className="block h-6 w-6 text-primary group-hover:text-primary"
+                                  aria-hidden="true"
+                                />
+                              ) : (
+                                <PlusIcon
+                                  className="block h-6 w-6 text-gray-400 group-hover:text-gray-500"
+                                  aria-hidden="true"
+                                />
+                              )}
+                            </span>
+                          </Disclosure.Button>
+                        </h3>
+                        <Disclosure.Panel
+                          as="div"
+                          className="prose prose-sm pb-6"
+                        >
+                          <ul role="list">
+                            <li>
+                              Product HS Code : 0708.10
+                            </li>
+                            <li>
+                              More about <a href="#">HS Code</a>
+                            </li>
+                          </ul>
+                        </Disclosure.Panel>
+                      </>
+                    )}
+                  </Disclosure>
                   {/* Shipping Info */}
 
                   <Disclosure as="div">
