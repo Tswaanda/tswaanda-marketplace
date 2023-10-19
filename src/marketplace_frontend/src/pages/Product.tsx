@@ -448,7 +448,9 @@ export default function Product() {
                   <TwitterShareButton
                     url={'https://www.tswaanda.com'}
                     title="I got my fresh produce from Tswaanda."
-                    hashtags={['#ReliableProduce #TswaandaProduce']}
+
+                    hashtags={['ReliableProduce', 'TswaandaProduce', 'SupportingAfricaFarmers']}
+
                   >
                     <TwitterIcon size={32} round />
                   </TwitterShareButton>
