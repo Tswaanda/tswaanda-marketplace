@@ -11,7 +11,7 @@ import {
 // Components
 import { Navbar, Footer, Loader } from "./components";
 import { useSelector, useDispatch } from 'react-redux'
-import HSCodes from './components/Documentation/HSCodes';
+import Article from './components/Documentation/Article';
 
 // Pages
 const Home = lazy(() => import('./pages/Home'));
@@ -190,10 +190,10 @@ const App = () => {
                       </div>
                     } 
                   />
-                  <Route path="hscodes" element={
+                  <Route path="article" element={
                       <div className={`${styles.paddingX} ${styles.flexStart}`}>
                         <div className={`${styles.boxWidth}`}>
-                          <HSCodes />
+                          <Article />
                         </div>
                       </div>
                     } 
