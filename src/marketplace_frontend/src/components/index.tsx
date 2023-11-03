@@ -7,7 +7,6 @@ import ProductCard from "./ProductCard/ProductCard";
 import Footer from "./Footer/Footer";
 import Loader from "./Loader";
 import Backdrop from "./Backdrop";
-import HSCodes from "./Documentation/HSCodes";
 
 export {
     Button,
@@ -18,6 +17,4 @@ export {
     ProductCard,
     Footer,
     Loader,
-    Backdrop,
-    HSCodes
 }
