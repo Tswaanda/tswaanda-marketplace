@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import {
   generateNewsLetterVerificationUrl,
   sendNewsLetterVerificationEmail,
-} from "../utils/emails-verification/verify";
+} from "../utils/emails/verify";
 import SubscriptionModal from "./SubscriptionModal";
 import { NewsLetterSubscription } from "../utils/types";
 import Subscribed from "./Subscribed";

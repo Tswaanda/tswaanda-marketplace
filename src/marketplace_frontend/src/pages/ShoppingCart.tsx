@@ -13,6 +13,7 @@ import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import { Loader } from "../components";
 import { useAuth } from "../components/ContextWrapper";
+import { sendOrderPlacedEmail } from "../utils/emails/orderPlacedUpdate";
 
 const navigation = {
   pages: [
@@ -39,7 +40,7 @@ function classNames(...classes) {
 }
 
 export default function ShoppingCart() {
-  const {backendActor, adminBackendActor, identity } = useAuth();
+  const { backendActor, adminBackendActor, identity } = useAuth();
 
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -257,7 +258,9 @@ export default function ShoppingCart() {
     ok?: any;
   }
   const getCartItems = async () => {
-    const res: Response = await backendActor.getMyCartItem(identity.getPrincipal());
+    const res: Response = await backendActor.getMyCartItem(
+      identity.getPrincipal()
+    );
     if (res.ok) {
       setCartItem(res.ok);
     } else {
@@ -267,7 +270,9 @@ export default function ShoppingCart() {
   };
 
   const getUserDetails = async () => {
-    const res: Response = await backendActor.getKYCRequest(identity.getPrincipal());
+    const res: Response = await backendActor.getKYCRequest(
+      identity.getPrincipal()
+    );
     if (res.err) {
       setNoAcc(true);
     } else if (res.ok) {
@@ -403,15 +408,25 @@ export default function ShoppingCart() {
           totalPrice: parseFloat(orderTotal),
           shippingEstimate: parseFloat(shippingEstimate),
           taxEstimate: parseFloat(taxEstimate),
-          status: "Pending Approval",
+          status: "pending",
           step: BigInt(0),
           dateCreated: BigInt(timestamp),
         };
-
-        console.log(order);
-
-        const res = await backendActor.createOrder(order);
-        const result = await backendActor.removeFromCart(identity.getPrincipal());
+        const res = await makeUpdates(product);
+        if (!res) {
+          toast.error(
+            "Error when placing order",
+            {
+              autoClose: 10000,
+              position: "top-center",
+              hideProgressBar: true,
+            }
+          );
+          setCreatingOrder(false);
+          return;
+        }
+        await backendActor.createOrder(order);
+        await backendActor.removeFromCart(identity.getPrincipal());
         toast.success(
           "Order successfully created. Head over to the orders page to track your order's progress.",
           {
@@ -421,6 +436,7 @@ export default function ShoppingCart() {
           }
         );
         setCreatingOrder(false);
+        window.location.reload();
       }
     } catch (error) {
       console.log("Error when placing order", error);
@@ -437,6 +453,29 @@ export default function ShoppingCart() {
     }
     return result;
   }
+
+  const makeUpdates = async (product: any) => {
+    let farmerRes: Response = await adminBackendActor.getFarmerByEmail(
+      product.farmer
+    );
+    if (farmerRes.ok) {
+      try {
+        let updatedProduct = {
+          ...product,
+          ordersPlaced: product.ordersPlaced + 1,
+        };
+        await adminBackendActor.updateProduct(
+          updatedProduct.id,
+          updatedProduct
+        );
+        await sendOrderPlacedEmail(farmerRes.ok, product);
+        return true;
+      } catch (error) {
+        console.log("Error when making updates", error);
+      }
+    }
+  };
+
 
   return (
     <div className="bg-white">

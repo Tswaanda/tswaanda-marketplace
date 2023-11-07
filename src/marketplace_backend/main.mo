@@ -16,6 +16,7 @@ actor Tswaanda {
   type CartItem = Type.CartItem;
   type EmailVerificationSchema = Type.EmailVerificationSchema;
   type NewsLetterSubscription = Type.NewsLetterSubscription;
+  type Stats = Type.Stats;
 
   var mapOfOrders = HashMap.HashMap<Text, ProductOrder>(0, Text.equal, Text.hash);
   var mapOfCustomers = HashMap.HashMap<Principal, Customer>(0, Principal.equal, Principal.hash);
@@ -33,6 +34,27 @@ actor Tswaanda {
 
   private stable var unverifiedEmailUsersEntries : [(Text, EmailVerificationSchema)] = [];
   private stable var newLetterSubscibers : [(Text, NewsLetterSubscription)] = [];
+
+   // -----------------------------------------Canister upgrade methods---------------------------------------------------
+  system func preupgrade() {
+    ordersEntries := Iter.toArray(mapOfOrders.entries());
+    customersEntries := Iter.toArray(mapOfCustomers.entries());
+    cartItemsEntries := Iter.toArray(customerCartItems.entries());
+    // cartItemsEntries := Iter.toArray(customerCartItems.entries());
+    favouriteItemsEntries := Iter.toArray(customerFavouriteItems.entries());
+    unverifiedEmailUsersEntries := Iter.toArray(unverifiedEmailUsers.entries());
+    newLetterSubscibers := Iter.toArray(newsLetterSubscriptions.entries());
+  };
+
+  system func postupgrade() {
+    mapOfOrders := HashMap.fromIter<Text, ProductOrder>(ordersEntries.vals(), 0, Text.equal, Text.hash);
+    mapOfCustomers := HashMap.fromIter<Principal, Customer>(customersEntries.vals(), 0, Principal.equal, Principal.hash);
+    customerCartItems := HashMap.fromIter<Principal, CartItem>(cartItemsEntries.vals(), 0, Principal.equal, Principal.hash);
+    // customerCartItems := HashMap.fromIter<Principal, List.List<CartItem>>(cartItemsEntries.vals(), 0, Principal.equal, Principal.hash);
+    customerFavouriteItems := HashMap.fromIter<Principal, List.List<Text>>(favouriteItemsEntries.vals(), 0, Principal.equal, Principal.hash);
+    unverifiedEmailUsers := HashMap.fromIter<Text, EmailVerificationSchema>(unverifiedEmailUsersEntries.vals(), 0, Text.equal, Text.hash);
+    newsLetterSubscriptions := HashMap.fromIter<Text, NewsLetterSubscription>(newLetterSubscibers.vals(), 0, Text.equal, Text.hash);
+  };
 
   //-----------------------------Product methods------------------------------------------------------
 
@@ -387,25 +409,18 @@ actor Tswaanda {
     return subscribersArray;
   };
 
-  // -----------------------------------------Canister upgrade methods---------------------------------------------------
-  system func preupgrade() {
-    ordersEntries := Iter.toArray(mapOfOrders.entries());
-    customersEntries := Iter.toArray(mapOfCustomers.entries());
-    cartItemsEntries := Iter.toArray(customerCartItems.entries());
-    // cartItemsEntries := Iter.toArray(customerCartItems.entries());
-    favouriteItemsEntries := Iter.toArray(customerFavouriteItems.entries());
-    unverifiedEmailUsersEntries := Iter.toArray(unverifiedEmailUsers.entries());
-    newLetterSubscibers := Iter.toArray(newsLetterSubscriptions.entries());
-  };
+  // -------------------------------------------------------STATS--------------------------------------------------------------------------------
 
-  system func postupgrade() {
-    mapOfOrders := HashMap.fromIter<Text, ProductOrder>(ordersEntries.vals(), 0, Text.equal, Text.hash);
-    mapOfCustomers := HashMap.fromIter<Principal, Customer>(customersEntries.vals(), 0, Principal.equal, Principal.hash);
-    customerCartItems := HashMap.fromIter<Principal, CartItem>(cartItemsEntries.vals(), 0, Principal.equal, Principal.hash);
-    // customerCartItems := HashMap.fromIter<Principal, List.List<CartItem>>(cartItemsEntries.vals(), 0, Principal.equal, Principal.hash);
-    customerFavouriteItems := HashMap.fromIter<Principal, List.List<Text>>(favouriteItemsEntries.vals(), 0, Principal.equal, Principal.hash);
-    unverifiedEmailUsers := HashMap.fromIter<Text, EmailVerificationSchema>(unverifiedEmailUsersEntries.vals(), 0, Text.equal, Text.hash);
-    newsLetterSubscriptions := HashMap.fromIter<Text, NewsLetterSubscription>(newLetterSubscibers.vals(), 0, Text.equal, Text.hash);
+  public shared query func getMarketPlaceStats() : async Stats {
+      let totalOrders = mapOfOrders.size();
+      let totalCustomers = mapOfCustomers.size();
+
+      let stats : Stats = {
+        totalOrders ;
+        totalCustomers;
+      };
+
+      return stats;
   };
 
 };

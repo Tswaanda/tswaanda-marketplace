@@ -8,7 +8,7 @@ import {
   createVerificationEntry,
   generateVerificationUrl,
   sendVerificationEmail,
-} from "../../utils/emails-verification/verify";
+} from "../../utils/emails/verify";
 import SubscriptionModal from "../SubscriptionModal";
 import { ThreeCircles } from "react-loader-spinner";
 import { useSelector } from "react-redux";

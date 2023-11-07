@@ -5,21 +5,26 @@ import Blob "mo:base/Blob";
 import List "mo:base/List";
 import Float "mo:base/Float";
 import Int "mo:base/Int";
+import Nat32 "mo:base/Nat32";
 
 module {
 
     // Types for products products
-    public type Product = {
+   public type Product = {
         id : Text;
-        minOrder : Int32;
         name : Text;
-        shortDescription : Text;
-        category : Text;
-        fullDescription : Text;
+        hscode: Text;
+        farmer: Text;
         price : Int32;
-        weight : Int32;
-        availability : Text;
+        minOrder : Int32;
+        shortDescription : Text;
+        fullDescription : Text;
+        category : Text;
         images : [Text];
+        weight : Int32;
+        ordersPlaced : Int32;
+        availability : Text;
+        created: Int;
     };
 
     // Types for Orders
@@ -118,6 +123,11 @@ module {
         email: Text;
         isVerified: Bool;
         created: Int;
+    };
+
+    public type Stats = {
+        totalOrders : Nat;
+        totalCustomers : Nat;
     }
 
 };

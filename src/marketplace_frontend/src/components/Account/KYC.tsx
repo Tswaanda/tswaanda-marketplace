@@ -19,7 +19,7 @@ import {
   createVerificationEntry,
   generateVerificationUrl,
   sendVerificationEmail,
-} from "../../utils/emails-verification/verify";
+} from "../../utils/emails/verify";
 import { useAuth } from "../ContextWrapper";
 
 type FormData = {
