@@ -11,7 +11,7 @@ const posts = [
   {
     id: 1,
     name: 'Agriculture HSCodes.',
-    href: '/article',
+    href: '/hscodes',
     category: 'Information',
     createdBy: 'CN',
     lastUpdated: '2023-03-17T00:00Z',

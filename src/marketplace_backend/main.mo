@@ -135,8 +135,7 @@ actor Tswaanda {
   //---------------------------------- KYC methods----------------------------------------------------------------
 
   public shared func createKYCRequest(request : Customer) : async Bool {
-    let id = request.userId;
-    mapOfCustomers.put(id, request);
+    mapOfCustomers.put(request.userId, request);
     return true;
   };
 
@@ -147,14 +146,9 @@ actor Tswaanda {
     };
   };
 
-  public shared func updateKYCRequest(id : Principal, request : Customer) : async Bool {
-    switch (mapOfCustomers.get(id)) {
-      case (null) { return false };
-      case (?result) {
-        ignore mapOfCustomers.replace(id, request);
-        return true;
-      };
-    };
+  public shared func updateKYCRequest(request : Customer) : async Bool {
+    mapOfCustomers.put(request.userId, request);
+    return true;
   };
 
   //----------------------------------KYC methods to be called from admin-------------------------------------------------

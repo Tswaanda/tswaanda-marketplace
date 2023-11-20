@@ -8,7 +8,7 @@ import {
   PlusIcon,
 } from "@heroicons/react/24/outline";
 import { HeartIcon as SolidHeartIcon } from "@heroicons/react/24/solid";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import LeaveReview from "../components/LeaveReview";
@@ -515,12 +515,14 @@ export default function Product() {
                           as="div"
                           className="prose prose-sm pb-6"
                         >
-                          <ul role="list">
+                          <ul role="list" className="text-green-500">
                             <li>
                               Product HS Code : {product?.hscode}
                             </li>
                             <li>
-                              More about <a href="#">HS Code</a>
+                             <button
+                             onClick={() => navigate('/hscodes')}
+                              className="text-gray-500 hover:underline">  More about HS Code</button>
                             </li>
                           </ul>
                         </Disclosure.Panel>

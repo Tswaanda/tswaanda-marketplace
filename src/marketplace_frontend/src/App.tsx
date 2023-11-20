@@ -35,6 +35,7 @@ import { setInit } from "./state/globalSlice";
 import { initActors } from "./utils/storage-config/functions";
 import VerifyNewsLetterEmail from "./pages/VerifyNewsLetterEmail";
 import { useAuth } from "./components/ContextWrapper";
+import HSCodes from "./components/Documentation/Article";
 
 export const loaderStyle: CSSProperties = {
   position: 'absolute',
@@ -190,10 +191,10 @@ const App = () => {
                       </div>
                     } 
                   />
-                  <Route path="article" element={
+                  <Route path="hscodes" element={
                       <div className={`${styles.paddingX} ${styles.flexStart}`}>
                         <div className={`${styles.boxWidth}`}>
-                          <Article />
+                          <HSCodes />
                         </div>
                       </div>
                     } 
