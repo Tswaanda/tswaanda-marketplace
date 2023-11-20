@@ -522,7 +522,7 @@ export default function Product() {
                             <li>
                              <button
                              onClick={() => navigate('/hscodes')}
-                              className="text-gray-500 hover:underline">  More about HS Code</button>
+                              className="text-gray-500 hover:underline">  More about HS Codes</button>
                             </li>
                           </ul>
                         </Disclosure.Panel>
