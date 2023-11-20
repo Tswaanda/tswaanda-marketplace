@@ -17,4 +17,5 @@ export {
     ProductCard,
     Footer,
     Loader,
+    Backdrop,
 }

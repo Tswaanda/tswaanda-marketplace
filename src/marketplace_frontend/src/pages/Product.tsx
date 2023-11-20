@@ -517,7 +517,7 @@ export default function Product() {
                         >
                           <ul role="list">
                             <li>
-                              Product HS Code : 0708.10
+                              Product HS Code : {product?.hscode}
                             </li>
                             <li>
                               More about <a href="#">HS Code</a>
