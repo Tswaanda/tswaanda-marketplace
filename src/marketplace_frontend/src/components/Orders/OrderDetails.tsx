@@ -100,7 +100,7 @@ export default function OrderDetails({orders}) {
                     <div className="border-t border-gray-200 py-6 px-4 sm:px-6 lg:p-8">
                       <h4 className="sr-only">Status</h4>
                       <p className="text-sm font-medium text-gray-900">
-                        {order.orderProducts.status} on{" "}
+                        {order.orderProducts.status} {" "}
                         <time dateTime={order.orderProducts.datetime}>{order.orderProducts.date}</time>
                       </p>
                       <div className="mt-6" aria-hidden="true">
