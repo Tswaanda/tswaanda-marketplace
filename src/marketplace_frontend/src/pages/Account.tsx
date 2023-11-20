@@ -31,7 +31,7 @@ const subNavigation = [
   { name: "Notifications", icon: BellIcon },
   { name: "Plan & Billing", icon: CreditCardIcon },
   { name: "Integrations", icon: SquaresPlusIcon },
-  { name: "Transactions", icon: CurrencyDollarIcon },
+  // { name: "Transactions", icon: CurrencyDollarIcon },
 ];
 
 function classNames(...classes) {
@@ -151,11 +151,11 @@ export default function Account() {
                 </div>
               )}
               {/* Transactions*/}
-              {activeInfo === "Transactions" && (
+              {/* {activeInfo === "Transactions" && (
                 <div className="space-y-6 sm:px-6 lg:col-span-9 lg:px-0">
                   <Transactions />
                 </div>
-              )}
+              )} */}
             </div>
           </main>
         </div>

@@ -36,6 +36,7 @@ import { initActors } from "./utils/storage-config/functions";
 import VerifyNewsLetterEmail from "./pages/VerifyNewsLetterEmail";
 import { useAuth } from "./components/ContextWrapper";
 import HSCodes from "./components/Documentation/Article";
+import Transactions from "./components/Account/Transactions";
 
 export const loaderStyle: CSSProperties = {
   position: 'absolute',
@@ -195,6 +196,22 @@ const App = () => {
                       <div className={`${styles.paddingX} ${styles.flexStart}`}>
                         <div className={`${styles.boxWidth}`}>
                           <HSCodes />
+                        </div>
+                      </div>
+                    } 
+                  />
+                  <Route path="transactions" element={
+                      <div className={`${styles.paddingX} ${styles.flexStart}`}>
+                        <div className={`${styles.boxWidth}`}>
+                          <Transactions />
+                        </div>
+                      </div>
+                    } 
+                  />
+                  <Route path="transactions" element={
+                      <div className={`${styles.paddingX} ${styles.flexStart}`}>
+                        <div className={`${styles.boxWidth}`}>
+                          <Transactions />
                         </div>
                       </div>
                     } 

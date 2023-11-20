@@ -46,6 +46,15 @@ const Orders = () => {
 
   return (
     <div>
+      <div className="flex sm:items-baseline sm:space-x-4 justify-end mt-2 mb-2">
+        <a
+          href="/transactions"
+          className="hidden text-sm font-medium text-primary hover:text-secondary sm:block"
+        >
+          Transaction History
+          <span aria-hidden="true"> &rarr;</span>
+        </a>
+      </div>
       <OrderDetails orders={orders} />
       {/* <OrderHistory /> */}
     </div>
