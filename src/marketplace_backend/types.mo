@@ -39,8 +39,12 @@ module {
         shippingEstimate : Float;
         taxEstimate : Float;
         status : Text;
-        step : Nat;
+        invoice: ?Text;
+        acceptedOn: ?Int;
+        shippedOn: ?Int;
+        deliveredOn: ?Int;
         dateCreated : Int;
+        step : Nat;
     };
 
     // -----------------------ORDER TYPES FOR MULTIPLE PRODUCTS PER ORDER-----------------------------------------

@@ -36,7 +36,7 @@ import { initActors } from "./utils/storage-config/functions";
 import VerifyNewsLetterEmail from "./pages/VerifyNewsLetterEmail";
 import { useAuth } from "./components/ContextWrapper";
 import HSCodes from "./components/Documentation/Article";
-import Transactions from "./components/Account/Transactions";
+import Transactions from "./pages/Transactions";
 
 export const loaderStyle: CSSProperties = {
   position: 'absolute',

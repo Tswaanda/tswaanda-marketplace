@@ -1,36 +1,54 @@
-import { Brocoli } from "../../../assets/assets"
+import { useEffect, useState } from "react";
+import { Brocoli } from "../../assets/assets";
+import { useAuth } from "../components/ContextWrapper";
+import { ProductOrder } from "../../../declarations/marketplace_backend/marketplace_backend.did";
 
-const orders = [
-  {
-    number: 'WU88191111',
-    date: 'January 22, 2023',
-    datetime: '2023-01-22',
-    invoiceHref: '#',
-    total: '$23800.00',
-    products: [
-      {
-        id: 1,
-        name: 'Brocoli',
-        href: '#',
-        price: '$700.00',
-        status: 'Delivered Jan 25, 2023',
-        imageSrc: Brocoli,
-        imageAlt: 'Brocoli vegetable',
-      },
-      // More products...
-    ],
-  },
-  // More orders...
-]
+// const orders = [
+//   {
+//     number: "WU88191111",
+//     date: "January 22, 2023",
+//     datetime: "2023-01-22",
+//     invoiceHref: "#",
+//     total: "$23800.00",
+//     products: [
+//       {
+//         id: 1,
+//         name: "Brocoli",
+//         href: "#",
+//         price: "$700.00",
+//         status: "Delivered Jan 25, 2023",
+//         imageSrc: Brocoli,
+//         imageAlt: "Brocoli vegetable",
+//       },
+//       // More products...
+//     ],
+//   },
+//   // More orders...
+// ];
 
 export default function Transactions() {
+  const { backendActor } = useAuth();
+  const [orders, setOrders] = useState<ProductOrder[] | null>(null);
+
+  useEffect(() => {
+    getDeliveredOrders();
+  }, []);
+
+  const getDeliveredOrders = async () => {
+    const orders: ProductOrder[] = await backendActor.getDeliveredOrders();
+    setOrders(orders);
+  };
+
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-7xl py-16 px-4 sm:px-6 lg:px-8 lg:pb-24">
         <div className="max-w-xl">
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">Transactions history</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+            Transactions history
+          </h1>
           <p className="mt-2 text-sm text-gray-500">
-            Check the status of recent orders, manage returns, and download invoices.
+            Check the status of recent orders, manage returns, and download
+            invoices.
           </p>
         </div>
 
@@ -38,10 +56,10 @@ export default function Transactions() {
           <h2 className="sr-only">Recent orders</h2>
 
           <div className="space-y-20">
-            {orders.map((order) => (
-              <div key={order.number}>
+            {orders?.map((order) => (
+              <div key={order.orderId}>
                 <h3 className="sr-only">
-                  Order placed on <time dateTime={order.datetime}>{order.date}</time>
+                  Order placed on <time></time>
                 </h3>
 
                 {/* <div className="rounded-lg bg-gray-50 py-6 px-4 sm:flex sm:items-center sm:justify-between sm:space-x-6 sm:px-6 lg:space-x-8">
@@ -74,46 +92,66 @@ export default function Transactions() {
                   <caption className="sr-only">Products</caption>
                   <thead className="sr-only text-left text-sm text-gray-500 sm:not-sr-only">
                     <tr>
-                      <th scope="col" className="py-3 pr-8 font-normal sm:w-2/5 lg:w-1/3">
+                      <th
+                        scope="col"
+                        className="py-3 pr-8 font-normal sm:w-2/5 lg:w-1/3"
+                      >
                         Product
                       </th>
-                      <th scope="col" className="hidden w-1/5 py-3 pr-8 font-normal sm:table-cell">
+                      <th
+                        scope="col"
+                        className="hidden w-1/5 py-3 pr-8 font-normal sm:table-cell"
+                      >
                         Price
                       </th>
-                      <th scope="col" className="hidden py-3 pr-8 font-normal sm:table-cell">
+                      <th
+                        scope="col"
+                        className="hidden py-3 pr-8 font-normal sm:table-cell"
+                      >
                         Status
                       </th>
-                      <th scope="col" className="w-0 py-3 text-right font-normal">
+                      <th
+                        scope="col"
+                        className="w-0 py-3 text-right font-normal"
+                      >
                         Info
                       </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 border-b border-gray-200 text-sm sm:border-t">
-                    {order.products.map((product) => (
-                      <tr key={product.id}>
+                    {/* {order.orderProducts.map((product) => ( */}
+                      <tr >
                         <td className="py-6 pr-8">
                           <div className="flex items-center">
                             <img
-                              src={product.imageSrc}
-                              alt={product.imageAlt}
+                              src={order.orderProducts.image}
                               className="mr-6 h-16 w-16 rounded object-cover object-center"
                             />
                             <div>
-                              <div className="font-medium text-gray-900">{product.name}</div>
-                              <div className="mt-1 sm:hidden">{product.price}</div>
+                              <div className="font-medium text-gray-900">
+                                {order.orderProducts.name}
+                              </div>
+                              <div className="mt-1 sm:hidden">
+                               $ {order.orderProducts.price}
+                              </div>
                             </div>
                           </div>
                         </td>
-                        <td className="hidden py-6 pr-8 sm:table-cell">{product.price}</td>
-                        <td className="hidden py-6 pr-8 sm:table-cell">{product.status}</td>
+                        <td className="hidden py-6 pr-8 sm:table-cell">
+                         $ {order.orderProducts.price}
+                        </td>
+                        <td className="hidden py-6 pr-8 sm:table-cell">
+                          {order.status}
+                        </td>
                         <td className="whitespace-nowrap py-6 text-right font-medium">
-                          <a href={product.href} className="text-primary">
-                            Download<span className="hidden lg:inline">{' '}Receipt</span>
-                            <span className="sr-only">, {product.name}</span>
+                          <a href="#" className="text-primary">
+                            Download
+                            <span className="hidden lg:inline"> Receipt</span>
+                            <span className="sr-only">, {order.orderProducts.name}</span>
                           </a>
                         </td>
                       </tr>
-                    ))}
+                    {/* ))} */}
                   </tbody>
                 </table>
               </div>
@@ -122,5 +160,5 @@ export default function Transactions() {
         </div>
       </div>
     </div>
-  )
+  );
 }
