@@ -3,29 +3,6 @@ import { Brocoli } from "../../assets/assets";
 import { useAuth } from "../components/ContextWrapper";
 import { ProductOrder } from "../../../declarations/marketplace_backend/marketplace_backend.did";
 
-// const orders = [
-//   {
-//     number: "WU88191111",
-//     date: "January 22, 2023",
-//     datetime: "2023-01-22",
-//     invoiceHref: "#",
-//     total: "$23800.00",
-//     products: [
-//       {
-//         id: 1,
-//         name: "Brocoli",
-//         href: "#",
-//         price: "$700.00",
-//         status: "Delivered Jan 25, 2023",
-//         imageSrc: Brocoli,
-//         imageAlt: "Brocoli vegetable",
-//       },
-//       // More products...
-//     ],
-//   },
-//   // More orders...
-// ];
-
 export default function Transactions() {
   const { backendActor } = useAuth();
   const [orders, setOrders] = useState<ProductOrder[] | null>(null);
