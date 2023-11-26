@@ -39,10 +39,10 @@ module {
         shippingEstimate : Float;
         taxEstimate : Float;
         status : Text;
-        invoice: ?Text;
-        acceptedOn: ?Int;
-        shippedOn: ?Int;
-        deliveredOn: ?Int;
+        // invoice: ?Text;
+        // acceptedOn: ?Int;
+        // shippedOn: ?Int;
+        // deliveredOn: ?Int;
         dateCreated : Int;
         step : Nat;
     };
@@ -132,6 +132,26 @@ module {
     public type Stats = {
         totalOrders : Nat;
         totalCustomers : Nat;
-    }
+    };
+
+    // Admin Types
+
+    public type Farmer = {
+        id : Text;
+        fullName : Text;
+        email : Text;
+        phone : Text;
+        farmName : Text;
+        location : Text;
+        description : Text;
+        listedProducts : [Text];
+        soldProducts : [Text];
+        produceCategories : Text;
+        proofOfAddress : ?Text;
+        idCopy: ?Text;
+        isVerified : Bool;
+        isSuspended : Bool;
+        created : Int;
+    };
 
 };

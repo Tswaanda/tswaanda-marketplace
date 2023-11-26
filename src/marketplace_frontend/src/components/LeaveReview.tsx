@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import { useAuth } from "./ContextWrapper";
+import { reviewOnProductUpdate } from "../utils/emails/reviewUpdate";
 
 type FormData = {
   review: string;
@@ -15,12 +16,30 @@ interface Response {
   ok?: any;
 }
 
-const LeaveReview = ({ setOpenReviewModal, id, getProductReviews }) => {
+const LeaveReview = ({ setOpenReviewModal, product, getProductReviews }) => {
 
   const {identity, backendActor, adminBackendActor} = useAuth();
   const [rating, setRating] = React.useState(0);
   const [userInfo, setUserInfo] = React.useState(null);
   const [submitting, setSubmitting] = React.useState(false);
+  const [farmerInfo, setFarmerInfo] = React.useState(null);
+
+  useEffect(() => {
+    getFarmerInfo()
+  }, [product]);
+
+  const getFarmerInfo = async () => {
+    try {
+      const res: Response = await backendActor.getFarmerByEmail(product.farmer);
+      if (res.err) {
+        console.log(res.err);
+      } else {
+        setFarmerInfo(res.ok);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const schema = z.object({
     review: z
@@ -71,14 +90,15 @@ const LeaveReview = ({ setOpenReviewModal, id, getProductReviews }) => {
         setSubmitting(true);
         const reviewData = {
           id: uuidv4(),
-          productId: id,
+          productId: product.id,
           userName: userInfo.firstName,
           userLastName: userInfo.lastName,
           rating: BigInt(rating),
           review: data.review,
           created: BigInt(Date.now()),
         };
-        await adminBackendActor.addProductReview(reviewData);
+        // await adminBackendActor.addProductReview(reviewData);
+        await reviewOnProductUpdate(rating, data.review, farmerInfo, product)
         toast.success("Review submitted successfully. Thank you for the feedback", {
           autoClose: 5000,
           position: "top-center",
@@ -93,6 +113,7 @@ const LeaveReview = ({ setOpenReviewModal, id, getProductReviews }) => {
       console.log(error);
     }
   };
+
   return (
     <>
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">

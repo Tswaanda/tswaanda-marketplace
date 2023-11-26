@@ -455,9 +455,10 @@ export default function ShoppingCart() {
   }
 
   const makeUpdates = async (product: any) => {
-    let farmerRes: Response = await adminBackendActor.getFarmerByEmail(
+    let farmerRes: Response = await backendActor.getFarmerByEmail(
       product.farmer
     );
+    console.log("Farmer res", farmerRes, product.farmer)
     if (farmerRes.ok) {
       try {
         let updatedProduct = {

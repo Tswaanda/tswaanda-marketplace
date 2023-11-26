@@ -617,7 +617,7 @@ export default function Product() {
                           </button>
                           {openReviewModal && (
                             <LeaveReview
-                              {...{ setOpenReviewModal, id, getProductReviews }}
+                              {...{ setOpenReviewModal, product, getProductReviews }}
                             />
                           )}
                           <ul role="list">
