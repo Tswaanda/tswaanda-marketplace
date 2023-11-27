@@ -19,7 +19,7 @@ import Billing from "../components/Account/Billing";
 import Notifications from "../components/Account/Notifications";
 import KYC from "../components/Account/KYC";
 
-import Transactions from "../components/Account/Transactions";
+import Transactions from "./Transactions";
 import { Loader } from "../components";
 import { useSelector } from "react-redux";
 import { RootState } from "../state/store";

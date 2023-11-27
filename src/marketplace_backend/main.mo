@@ -17,6 +17,7 @@ actor Tswaanda {
   type EmailVerificationSchema = Type.EmailVerificationSchema;
   type NewsLetterSubscription = Type.NewsLetterSubscription;
   type Stats = Type.Stats;
+  type Farmer = Type.Farmer;
 
   var mapOfOrders = HashMap.HashMap<Text, ProductOrder>(0, Text.equal, Text.hash);
   var mapOfCustomers = HashMap.HashMap<Principal, Customer>(0, Principal.equal, Principal.hash);
@@ -35,7 +36,7 @@ actor Tswaanda {
   private stable var unverifiedEmailUsersEntries : [(Text, EmailVerificationSchema)] = [];
   private stable var newLetterSubscibers : [(Text, NewsLetterSubscription)] = [];
 
-   // -----------------------------------------Canister upgrade methods---------------------------------------------------
+  // -----------------------------------------Canister upgrade methods---------------------------------------------------
   system func preupgrade() {
     ordersEntries := Iter.toArray(mapOfOrders.entries());
     customersEntries := Iter.toArray(mapOfCustomers.entries());
@@ -56,16 +57,25 @@ actor Tswaanda {
     newsLetterSubscriptions := HashMap.fromIter<Text, NewsLetterSubscription>(newLetterSubscibers.vals(), 0, Text.equal, Text.hash);
   };
 
-  //-----------------------------Product methods------------------------------------------------------
+  //-----------------------------Admin intercanister calls------------------------------------------------------
 
-  let productsInterface = actor ("56r5t-tqaaa-aaaal-qb4gq-cai") : actor {
+  let adminInterface = actor ("br5f7-7uaaa-aaaaa-qaaca-cai") : actor {
     getAllProducts : shared query () -> async [Product];
     filterProducts : shared [Text] -> async [Product];
+    getFarmerByEmail : shared (Text) -> async Result.Result<Farmer, Text>;
   };
 
   public shared func getProducts() : async [Product] {
-    let products = await productsInterface.getAllProducts();
+    let products = await adminInterface.getAllProducts();
     return products;
+  };
+
+  public shared func getFarmerByEmail(email : Text) : async Result.Result<Farmer, Text> {
+    let res = await adminInterface.getFarmerByEmail(email);
+    switch (res) {
+      case (#ok(Farmer)) { return #ok(Farmer) };
+      case (#err(Text)) { return #err(Text) };
+    };
   };
 
   //-------------------------------- Orders methods-----------------------------------------------------------
@@ -135,8 +145,7 @@ actor Tswaanda {
   //---------------------------------- KYC methods----------------------------------------------------------------
 
   public shared func createKYCRequest(request : Customer) : async Bool {
-    let id = request.userId;
-    mapOfCustomers.put(id, request);
+    mapOfCustomers.put(request.userId, request);
     return true;
   };
 
@@ -147,17 +156,12 @@ actor Tswaanda {
     };
   };
 
-  public shared func updateKYCRequest(id : Principal, request : Customer) : async Bool {
-    switch (mapOfCustomers.get(id)) {
-      case (null) { return false };
-      case (?result) {
-        ignore mapOfCustomers.replace(id, request);
-        return true;
-      };
-    };
+  public shared func updateKYCRequest(request : Customer) : async Bool {
+    mapOfCustomers.put(request.userId, request);
+    return true;
   };
 
-  //----------------------------------KYC methods to be called from admin-------------------------------------------------
+  //----------------------------------Methods to be called from admin-------------------------------------------------
 
   public shared query func getAllKYC() : async [Customer] {
     let customersArray = Iter.toArray(mapOfCustomers.vals());
@@ -233,7 +237,7 @@ actor Tswaanda {
   //   for (item in items.vals()) {
   //     itemsIds := List.push(item.id, itemsIds);
   //   };
-  //   let products = await productsInterface.filterProducts(List.toArray(itemsIds));
+  //   let products = await adminInterface.filterProducts(List.toArray(itemsIds));
   //   return products;
   // };
 
@@ -315,7 +319,7 @@ actor Tswaanda {
       case (null) { List.nil<Text>() };
     };
     let items = List.toArray(favItems);
-    let products = await productsInterface.filterProducts(items);
+    let products = await adminInterface.filterProducts(items);
     return products;
   };
 
@@ -412,15 +416,15 @@ actor Tswaanda {
   // -------------------------------------------------------STATS--------------------------------------------------------------------------------
 
   public shared query func getMarketPlaceStats() : async Stats {
-      let totalOrders = mapOfOrders.size();
-      let totalCustomers = mapOfCustomers.size();
+    let totalOrders = mapOfOrders.size();
+    let totalCustomers = mapOfCustomers.size();
 
-      let stats : Stats = {
-        totalOrders ;
-        totalCustomers;
-      };
+    let stats : Stats = {
+      totalOrders;
+      totalCustomers;
+    };
 
-      return stats;
+    return stats;
   };
 
 };

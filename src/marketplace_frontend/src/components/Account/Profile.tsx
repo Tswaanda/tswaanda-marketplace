@@ -115,7 +115,7 @@ const Profile = ({ activate }) => {
         status: "pending",
         isUpdated: true,
       };
-      await backendActor.updateKYCRequest(userInfo.userId, updatedObject);
+      await backendActor.updateKYCRequest(updatedObject);
       toast.success("Profile Information updated", {
         autoClose: 5000,
         position: "top-center",
@@ -143,7 +143,7 @@ const Profile = ({ activate }) => {
         status: "pending",
         isUpdated: true,
       };
-      await backendActor.updateKYCRequest(userInfo.userId, updatedObject);
+      await backendActor.updateKYCRequest(updatedObject);
       toast.success("Profile Information updated", {
         autoClose: 5000,
         position: "top-center",
@@ -215,7 +215,6 @@ const Profile = ({ activate }) => {
   const updateProfile = async () => {
     try {
       const res = await backendActor.updateKYCRequest(
-        userInfo.userId,
         userInfo
       );
       console.log(res);
@@ -237,7 +236,7 @@ const Profile = ({ activate }) => {
         console.log("Not updating the email is the same");
         setUpdating(false);
       } else {
-        await backendActor.updateKYCRequest(userInfo.userId, userInfo);
+        await backendActor.updateKYCRequest(userInfo);
 
         let uniqueString: string = String(uuidv4());
         const url = generateVerificationUrl(userInfo.id, uniqueString);
