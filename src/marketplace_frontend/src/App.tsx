@@ -34,7 +34,7 @@ import Orders from "./pages/Orders";
 import { setInit } from "./state/globalSlice";
 import { initActors } from "./utils/storage-config/functions";
 import VerifyNewsLetterEmail from "./pages/VerifyNewsLetterEmail";
-import { useAuth } from "./components/ContextWrapper";
+import { useAuth } from "./hooks/ContextWrapper";
 import HSCodes from "./components/Documentation/Article";
 import Transactions from "./pages/Transactions";
 

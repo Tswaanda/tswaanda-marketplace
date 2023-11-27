@@ -3,7 +3,7 @@ import { useState } from "react";
 import SearchBar from "../components/Searchbar/Searchbar";
 import Button from "../components/Button/Button";
 import { Loader, ProductCard } from "../components";
-import { useAuth } from "../components/ContextWrapper";
+import { useAuth } from "../hooks/ContextWrapper";
 
 const categories = ["All", "Fruits", "Nuts", "Legumes", "Spices", "Vegetables"];
 

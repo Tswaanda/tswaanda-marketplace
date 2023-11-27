@@ -2,7 +2,7 @@ import React from "react";
 import OrderDetails from "../components/Orders/OrderDetails";
 import OrderHistory from "../components/Orders/OrderHistory";
 import { useEffect, useState } from "react";
-import { useAuth } from "../components/ContextWrapper";
+import { useAuth } from "../hooks/ContextWrapper";
 
 const Orders = () => {
 

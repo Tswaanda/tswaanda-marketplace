@@ -12,7 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import { Loader } from "../components";
-import { useAuth } from "../components/ContextWrapper";
+import { useAuth } from "../hooks/ContextWrapper";
 import { sendOrderPlacedEmail } from "../utils/emails/orderPlacedUpdate";
 
 const navigation = {

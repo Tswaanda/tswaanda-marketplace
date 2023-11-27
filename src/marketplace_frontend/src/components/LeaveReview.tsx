@@ -4,7 +4,7 @@ import { set, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
-import { useAuth } from "./ContextWrapper";
+import { useAuth } from "../hooks/ContextWrapper";
 import { reviewOnProductUpdate } from "../utils/emails/reviewUpdate";
 
 type FormData = {

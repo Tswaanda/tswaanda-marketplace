@@ -15,7 +15,7 @@ import { Logo } from "../../assets/assets.js";
 import { useDispatch } from "react-redux";
 import { setIsRegistered } from "../state/globalSlice";
 import Favorites from "./Favorites";
-import { useAuth } from "./ContextWrapper";
+import { useAuth } from "../hooks/ContextWrapper";
 
 const user = {
   imageUrl: "./avatar.webp",
@@ -38,7 +38,7 @@ function classNames(...classes) {
 }
 
 const Navbar = () => {
-  const { login, logout, backendActor, identity, isAuthenticated } = useAuth();
+  const { login, nfidlogin, logout, backendActor, identity, isAuthenticated } = useAuth();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -86,6 +86,8 @@ const Navbar = () => {
     }
   }, [identity]);
 
+  console.log("Principal in navbar", identity?.getPrincipal().toText());
+
   return (
     <nav className="bg-white pb-4">
       {isAuthenticated === false || mobileMenuOpen ? (
@@ -131,7 +133,7 @@ const Navbar = () => {
               <div className="hidden lg:flex lg:min-w-0 lg:flex-1 lg:justify-end">
                 <button
                   onClick={() => {
-                    login();
+                    nfidlogin();
                   }}
                   className="inline-block rounded-lg px-3 py-1.5 text-sm font-semibold leading-6 text-gray-900 shadow-sm ring-1 ring-primary hover:ring-gray-900/20"
                 >
@@ -184,7 +186,7 @@ const Navbar = () => {
                     <div className="py-6">
                       <button
                         onClick={() => {
-                          login();
+                          nfidlogin();
                         }}
                         className="-mx-3 block rounded-lg py-2.5 px-3 text-base font-semibold leading-6 text-gray-900 hover:bg-gray-400/10 cursor-pointer"
                       >

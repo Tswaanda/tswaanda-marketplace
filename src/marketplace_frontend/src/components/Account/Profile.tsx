@@ -14,7 +14,7 @@ import { ThreeCircles } from "react-loader-spinner";
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
 import { deleteAsset, uploadFile } from "../../utils/storage-config/functions";
-import { useAuth } from "../ContextWrapper";
+import { useAuth } from "../../hooks/ContextWrapper";
 
 const Profile = ({ activate }) => {
   const {backendActor , identity} = useAuth();

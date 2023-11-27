@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Brocoli } from "../../assets/assets";
-import { useAuth } from "../components/ContextWrapper";
+import { useAuth } from "../hooks/ContextWrapper";
 import { ProductOrder } from "../../../declarations/marketplace_backend/marketplace_backend.did";
 
 export default function Transactions() {

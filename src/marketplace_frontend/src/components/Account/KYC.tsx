@@ -20,7 +20,7 @@ import {
   generateVerificationUrl,
   sendVerificationEmail,
 } from "../../utils/emails/verify";
-import { useAuth } from "../ContextWrapper";
+import { useAuth } from "../../hooks/ContextWrapper";
 
 type FormData = {
   username: string;

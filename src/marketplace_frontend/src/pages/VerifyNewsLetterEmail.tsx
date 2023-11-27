@@ -4,7 +4,7 @@ import { Loader } from "../components";
 import { loaderStyle } from "../App";
 import { Result } from "../utils/types";
 import { toast } from "react-toastify";
-import { useAuth } from "../components/ContextWrapper";
+import { useAuth } from "../hooks/ContextWrapper";
 
 const VerifyNewsLetterEmail = () => {
   const {backendActor } = useAuth();
