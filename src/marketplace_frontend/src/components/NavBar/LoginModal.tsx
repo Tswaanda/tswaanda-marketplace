@@ -2,12 +2,14 @@ import { Fragment, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { LockClosedIcon } from '@heroicons/react/24/outline'
 import { ICPLogo } from '../../../assets/assets'
+import { useAuth } from '../ContextWrapper'
 
 
 export default function LoginModal({ openModal, setOpenModal }) {
   // const [openModal, setOpenModal] = useState(true)
 
   const cancelButtonRef = useRef(null)
+  const { login, logout, backendActor, identity, isAuthenticated } = useAuth();
 
   return (
     <Transition.Root show={openModal} as={Fragment}>
@@ -55,7 +57,10 @@ export default function LoginModal({ openModal, setOpenModal }) {
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:col-start-2"
-                    onClick={() => setOpenModal(false)}
+                    // onClick={() => setOpenModal(false)}
+                    onClick={() => {
+                    login();
+                    }}
                   >
                     Internet Identity
                   </button>
