@@ -2,10 +2,11 @@ import { Fragment, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { LockClosedIcon } from '@heroicons/react/24/outline'
 import { ICPLogo } from '../../../assets/assets'
+import { useAuth } from '../../hooks/ContextWrapper';
 
 
 export default function LoginModal({ openModal, setOpenModal }) {
-  // const [openModal, setOpenModal] = useState(true)
+  const { login, nfidlogin,} = useAuth();
 
   const cancelButtonRef = useRef(null)
 
@@ -55,14 +56,14 @@ export default function LoginModal({ openModal, setOpenModal }) {
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:col-start-2"
-                    onClick={() => setOpenModal(false)}
+                    onClick={login}
                   >
                     Internet Identity
                   </button>
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-secondary sm:col-start-1 sm:mt-0"
-                    onClick={() => setOpenModal(false)}
+                    onClick={nfidlogin}
                     ref={cancelButtonRef}
                   >
                     Google via NFID

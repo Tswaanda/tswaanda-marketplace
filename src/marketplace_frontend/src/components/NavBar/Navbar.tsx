@@ -39,16 +39,12 @@ function classNames(...classes) {
 }
 
 const Navbar = () => {
-  const { login, nfidlogin, logout, backendActor, identity, isAuthenticated } = useAuth();
+  const { logout, backendActor, identity, isAuthenticated } = useAuth();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenModal = () => {
       setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-      setIsModalOpen(false);
   };
 
   const navigate = useNavigate();
@@ -142,9 +138,6 @@ const Navbar = () => {
               <div className="hidden lg:flex lg:min-w-0 lg:flex-1 lg:justify-end">
                 <button
                   onClick={handleOpenModal}
-                  // onClick={() => {
-                  //   login();
-                  // }}
                   className="inline-block rounded-lg px-3 py-1.5 text-sm font-semibold leading-6 text-gray-900 shadow-sm ring-1 ring-primary hover:ring-gray-900/20"
                 >
                   Log in
