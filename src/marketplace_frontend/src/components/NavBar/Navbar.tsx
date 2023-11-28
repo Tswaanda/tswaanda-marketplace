@@ -7,15 +7,16 @@ import {
   ShoppingCartIcon,
   HeartIcon,
 } from "@heroicons/react/24/outline";
-import { navigation } from "../constants";
+import { navigation } from "../../constants";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { Logo } from "../../assets/assets.js";
+import { Logo } from "../../../assets/assets.js";
 import { useDispatch } from "react-redux";
-import { setIsRegistered } from "../state/globalSlice";
+import { setIsRegistered } from "../../state/globalSlice";
 import Favorites from "./Favorites";
-import { useAuth } from "../hooks/ContextWrapper";
+import LoginModal from "./LoginModal";
+import { useAuth } from "../../hooks/ContextWrapper";
 
 const user = {
   imageUrl: "./avatar.webp",
@@ -39,6 +40,16 @@ function classNames(...classes) {
 
 const Navbar = () => {
   const { login, nfidlogin, logout, backendActor, identity, isAuthenticated } = useAuth();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+      setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+      setIsModalOpen(false);
+  };
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -130,13 +141,15 @@ const Navbar = () => {
               </div>
               <div className="hidden lg:flex lg:min-w-0 lg:flex-1 lg:justify-end">
                 <button
-                  onClick={() => {
-                    login();
-                  }}
+                  onClick={handleOpenModal}
+                  // onClick={() => {
+                  //   login();
+                  // }}
                   className="inline-block rounded-lg px-3 py-1.5 text-sm font-semibold leading-6 text-gray-900 shadow-sm ring-1 ring-primary hover:ring-gray-900/20"
                 >
                   Log in
                 </button>
+                {isModalOpen && <LoginModal openModal={isModalOpen} setOpenModal={setIsModalOpen} />}
               </div>
             </nav>
             <Dialog as="div" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
@@ -183,9 +196,7 @@ const Navbar = () => {
                     </div>
                     <div className="py-6">
                       <button
-                        onClick={() => {
-                          login();
-                        }}
+                        onClick={handleOpenModal}
                         className="-mx-3 block rounded-lg py-2.5 px-3 text-base font-semibold leading-6 text-gray-900 hover:bg-gray-400/10 cursor-pointer"
                       >
                         Log in

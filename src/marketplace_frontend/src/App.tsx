@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 
 // Components
-import { Navbar, Footer, Loader } from "./components";
+import { Navbar, Footer, Loader, LoginModal } from "./components";
 import { useSelector, useDispatch } from 'react-redux'
 import Article from './components/Documentation/Article';
 
@@ -76,7 +76,7 @@ const App = () => {
 
           <div className={`${styles.paddingX} ${styles.flexCenter}`}>
             <div className={`${styles.boxWidth}`}>
-              <Navbar/> 
+              <Navbar  /> 
             </div>
           </div>
             
