@@ -10,11 +10,11 @@ import Nat32 "mo:base/Nat32";
 module {
 
     // Types for products products
-   public type Product = {
+    public type Product = {
         id : Text;
         name : Text;
-        hscode: Text;
-        farmer: Text;
+        hscode : Text;
+        farmer : Text;
         price : Int32;
         minOrder : Int32;
         shortDescription : Text;
@@ -24,7 +24,7 @@ module {
         weight : Int32;
         ordersPlaced : Int32;
         availability : Text;
-        created: Int;
+        created : Int;
     };
 
     // Types for Orders
@@ -75,7 +75,12 @@ module {
     // Types for the KYC methods
     public type Customer = {
         id : Text;
-        userId : Principal;
+        principal : Principal;
+        body: ?CustomerBody;
+        created : Int;
+    };
+
+    type CustomerBody = {
         userName : Text;
         firstName : Text;
         lastName : Text;
@@ -92,14 +97,10 @@ module {
         kycIDCopy : Text;
         proofOfAddressCopy : Text;
         status : Text;
-        dateCreated : Int;
         isUpdated : Bool;
         isEmailVerified : Bool;
         membershipLevel : Text;
         userWebsite : Text;
-        isFarmer : Bool;
-        isBuyer : Bool;
-        isStaff : Bool;
         pushNotification : {
             email : Bool;
             sms : Bool;
@@ -123,10 +124,10 @@ module {
     };
 
     public type NewsLetterSubscription = {
-        id: Text;
-        email: Text;
-        isVerified: Bool;
-        created: Int;
+        id : Text;
+        email : Text;
+        isVerified : Bool;
+        created : Int;
     };
 
     public type Stats = {
@@ -148,7 +149,7 @@ module {
         soldProducts : [Text];
         produceCategories : Text;
         proofOfAddress : ?Text;
-        idCopy: ?Text;
+        idCopy : ?Text;
         isVerified : Bool;
         isSuspended : Bool;
         created : Int;

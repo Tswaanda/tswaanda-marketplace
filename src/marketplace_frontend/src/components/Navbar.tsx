@@ -74,19 +74,17 @@ const Navbar = () => {
     }
   };
 
+  const getCartsNum = async () => {
+    const res = await backendActor.getMyCartItem(identity?.getPrincipal());
+    setCartItems(res);
+  };
+
   useEffect(() => {
     if (identity) {
       getMyKYC();
-      const getCartsNum = async () => {
-        const res = await backendActor.getMyCartItem(identity?.getPrincipal());
-        setCartItems(res);
-      };
-
       getCartsNum();
     }
   }, [identity]);
-
-  console.log("Principal in navbar", identity?.getPrincipal().toText());
 
   return (
     <nav className="bg-white pb-4">
@@ -133,7 +131,7 @@ const Navbar = () => {
               <div className="hidden lg:flex lg:min-w-0 lg:flex-1 lg:justify-end">
                 <button
                   onClick={() => {
-                    nfidlogin();
+                    login();
                   }}
                   className="inline-block rounded-lg px-3 py-1.5 text-sm font-semibold leading-6 text-gray-900 shadow-sm ring-1 ring-primary hover:ring-gray-900/20"
                 >
@@ -186,7 +184,7 @@ const Navbar = () => {
                     <div className="py-6">
                       <button
                         onClick={() => {
-                          nfidlogin();
+                          login();
                         }}
                         className="-mx-3 block rounded-lg py-2.5 px-3 text-base font-semibold leading-6 text-gray-900 hover:bg-gray-400/10 cursor-pointer"
                       >
