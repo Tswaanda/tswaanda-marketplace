@@ -59,7 +59,7 @@ actor Tswaanda {
 
   //-----------------------------Admin intercanister calls------------------------------------------------------
 
-  let adminInterface = actor ("br5f7-7uaaa-aaaaa-qaaca-cai") : actor {
+  let adminInterface = actor ("cuj6u-c4aaa-aaaaa-qaajq-cai") : actor {
     getAllProducts : shared query () -> async [Product];
     filterProducts : shared [Text] -> async [Product];
     getFarmerByEmail : shared (Text) -> async Result.Result<Farmer, Text>;
@@ -145,11 +145,11 @@ actor Tswaanda {
   //---------------------------------- KYC methods----------------------------------------------------------------
 
   public shared func createKYCRequest(request : Customer) : async Bool {
-    mapOfCustomers.put(request.userId, request);
+    mapOfCustomers.put(request.principal, request);
     return true;
   };
 
-  public shared func getKYCRequest(id : Principal) : async Result.Result<Customer, Text> {
+  public shared query func getKYCRequest(id : Principal) : async Result.Result<Customer, Text> {
     switch (mapOfCustomers.get(id)) {
       case (null) { return #err("Customer with the provided id not found") };
       case (?result) { return #ok(result) };
@@ -157,7 +157,7 @@ actor Tswaanda {
   };
 
   public shared func updateKYCRequest(request : Customer) : async Bool {
-    mapOfCustomers.put(request.userId, request);
+    mapOfCustomers.put(request.principal, request);
     return true;
   };
 
@@ -180,17 +180,38 @@ actor Tswaanda {
 
   public shared query func getPendingKYCReaquest() : async [Customer] {
     let customersArray = Iter.toArray(mapOfCustomers.vals());
-    return Array.filter<Customer>(customersArray, func customer = customer.status == "pending");
+    return Array.filter<Customer>(
+      customersArray,
+      func customer = switch (customer.body) {
+        case (?body) {
+          body.status == "pending"
+
+        };
+        case (_) { false };
+      },
+    );
   };
 
   public shared query func getApprovedKYC() : async [Customer] {
     let customersArray = Iter.toArray(mapOfCustomers.vals());
-    return Array.filter<Customer>(customersArray, func customer = customer.status == "approved");
+    return Array.filter<Customer>(
+      customersArray,
+      func customer = switch (customer.body) {
+        case (?body) { body.status == "approved" };
+        case (_) { false };
+      },
+    );
   };
 
   public shared query func getPendingKYCReaquestSize() : async Nat {
     let customersArray = Iter.toArray(mapOfCustomers.vals());
-    let pending = Array.filter<Customer>(customersArray, func customer = customer.status == "pending");
+    let pending = Array.filter<Customer>(
+      customersArray,
+      func customer = switch (customer.body) {
+        case (?body) { body.status == "pending" };
+        case (_) { false };
+      },
+    );
     let size = Array.size(pending);
     return size;
   };

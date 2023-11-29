@@ -17,6 +17,8 @@ import { setIsRegistered } from "../../state/globalSlice";
 import Favorites from "./Favorites";
 import LoginModal from "./LoginModal";
 import { useAuth } from "../../hooks/ContextWrapper";
+import KYCModal from "../KYCModal";
+import { Customer } from "../../../../declarations/marketplace_backend/marketplace_backend.did";
 
 const user = {
   imageUrl: "./avatar.webp",
@@ -40,11 +42,12 @@ function classNames(...classes) {
 
 const Navbar = () => {
   const { logout, backendActor, identity, isAuthenticated } = useAuth();
+  const [showKycModal, setShowKycModal] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenModal = () => {
-      setIsModalOpen(true);
+    setIsModalOpen(true);
   };
 
   const navigate = useNavigate();
@@ -52,7 +55,7 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openFavourites, setOpenFavourites] = useState(false);
 
-  const [userInfo, setUserInfo] = useState(null);
+  const [userInfo, setUserInfo] = useState<Customer | null>(null);
 
   const [cartItems, setCartItems] = useState(null);
 
@@ -78,6 +81,8 @@ const Navbar = () => {
     if (info.ok) {
       setUserInfo(info.ok);
       dispatch(setIsRegistered());
+    } else {
+      setShowKycModal(true);
     }
   };
 
@@ -93,8 +98,18 @@ const Navbar = () => {
     }
   }, [identity]);
 
+  console.log(userInfo);
+
   return (
     <nav className="bg-white pb-4">
+      <>
+        {showKycModal && (
+          <KYCModal
+            show={showKycModal}
+            onClose={() => setShowKycModal(false)}
+          />
+        )}
+      </>
       {isAuthenticated === false || mobileMenuOpen ? (
         <div className="px-6 pt-6 lg:px-8">
           <div>
@@ -138,12 +153,16 @@ const Navbar = () => {
               <div className="hidden lg:flex lg:min-w-0 lg:flex-1 lg:justify-end">
                 <button
                   onClick={handleOpenModal}
-                  
                   className="inline-block rounded-lg px-3 py-1.5 text-sm font-semibold leading-6 text-gray-900 shadow-sm ring-1 ring-primary hover:ring-gray-900/20"
                 >
                   Log in
                 </button>
-                {isModalOpen && <LoginModal openModal={isModalOpen} setOpenModal={setIsModalOpen} />}
+                {isModalOpen && (
+                  <LoginModal
+                    openModal={isModalOpen}
+                    setOpenModal={setIsModalOpen}
+                  />
+                )}
               </div>
             </nav>
             <Dialog as="div" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
@@ -298,7 +317,9 @@ const Navbar = () => {
                           <img
                             className="h-8 w-8 rounded-full"
                             src={
-                              userInfo ? userInfo.profilePhoto : user.imageUrl
+                              userInfo?.body[0]?.profilePhoto 
+                                ? userInfo.body[0].profilePhoto
+                                : user.imageUrl
                             }
                             alt=""
                           />
@@ -400,17 +421,17 @@ const Navbar = () => {
                     <div className="flex-shrink-0">
                       <img
                         className="h-10 w-10 rounded-full"
-                        src={userInfo ? userInfo.profilePhoto : user.imageUrl}
+                        src={userInfo?.body[0]?.profilePhoto || user.imageUrl}
                         alt=""
                       />
                     </div>
                     {userInfo && (
                       <div className="ml-3">
                         <div className="text-base font-medium text-gray-800">
-                          {userInfo.firstName}
+                          {userInfo?.body[0]?.firstName}
                         </div>
                         <div className="text-sm font-medium text-gray-500">
-                          {userInfo.email}
+                          {userInfo?.body[0]?.email}
                         </div>
                       </div>
                     )}

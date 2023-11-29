@@ -15,12 +15,13 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
 import { deleteAsset, uploadFile } from "../../utils/storage-config/functions";
 import { useAuth } from "../../hooks/ContextWrapper";
+import { Customer } from "../../../../declarations/marketplace_backend/marketplace_backend.did";
 
 const Profile = ({ activate }) => {
-  const {backendActor , identity} = useAuth();
+  const { backendActor, identity } = useAuth();
 
   const { storageInitiated } = useSelector((state: RootState) => state.global);
-  const [userInfo, setUserInfo] = useState(null);
+  const [userInfo, setUserInfo] = useState<Customer | null>(null);
   const [updating, setUpdating] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [noUser, setNoUser] = useState(false);
@@ -42,35 +43,61 @@ const Profile = ({ activate }) => {
   const handleFirstNameChange = (value) => {
     setUserInfo((prevUserInfo) => ({
       ...prevUserInfo,
-      firstName: value,
+      body: [
+        {
+          ...prevUserInfo.body[0],
+          firstName: value,
+        },
+      ],
     }));
   };
 
   const handleEmailChange = (value) => {
+    setEmail(value);
     setUserInfo((prevUserInfo) => ({
       ...prevUserInfo,
-      email: value,
+      body: [
+        {
+          ...prevUserInfo.body[0],
+          email: value,
+        },
+      ],
     }));
   };
 
   const handleLastNameChange = (value) => {
     setUserInfo((prevUserInfo) => ({
       ...prevUserInfo,
-      lastName: value,
+      body: [
+        {
+          ...prevUserInfo.body[0],
+          lastName: value,
+        },
+      ],
     }));
   };
 
   const handleCompanyChange = (value) => {
     setUserInfo((prevUserInfo) => ({
       ...prevUserInfo,
-      organization: value,
+      body: [
+        {
+          ...prevUserInfo.body[0],
+          organization: value,
+        },
+      ],
     }));
   };
 
   const handleAboutChange = (value) => {
     setUserInfo((prevUserInfo) => ({
       ...prevUserInfo,
-      about: value,
+      body: [
+        {
+          ...prevUserInfo.body[0],
+          about: value,
+        },
+      ],
     }));
   };
 
@@ -106,14 +133,19 @@ const Profile = ({ activate }) => {
     setUpdating(true);
     try {
       console.log("Updating id file");
-      await deleteAsset(userInfo.kycIDCopy);
+      await deleteAsset(userInfo.body[0].kycIDCopy);
       const idCopyUrl = await uploadAsset(idCopy);
       console.log("Profile id copy saved", idCopyUrl);
-      const updatedObject = {
+      const updatedObject: Customer = {
         ...userInfo,
-        kycIDCopy: idCopyUrl,
-        status: "pending",
-        isUpdated: true,
+        body: [
+          {
+            ...userInfo.body[0],
+            kycIDCopy: idCopyUrl,
+            status: "pending",
+            isUpdated: true,
+          },
+        ],
       };
       await backendActor.updateKYCRequest(updatedObject);
       toast.success("Profile Information updated", {
@@ -134,14 +166,19 @@ const Profile = ({ activate }) => {
     setUpdating(true);
     try {
       console.log("Updating id file");
-      await deleteAsset(userInfo.proofOfAddressCopy);
+      await deleteAsset(userInfo.body[0].proofOfAddressCopy);
       const addressUrl = await uploadAsset(proofOfAddress);
       console.log("address file saved", addressUrl);
       const updatedObject = {
         ...userInfo,
-        proofOfAddressCopy: addressUrl,
-        status: "pending",
-        isUpdated: true,
+        body: [
+          {
+            ...userInfo.body[0],
+            proofOfAddressCopy: addressUrl,
+            status: "pending",
+            isUpdated: true,
+          },
+        ],
       };
       await backendActor.updateKYCRequest(updatedObject);
       toast.success("Profile Information updated", {
@@ -174,10 +211,12 @@ const Profile = ({ activate }) => {
   const getCustomerInfo = async () => {
     setLoading(true);
     try {
-      const res: Result = await backendActor.getKYCRequest(identity.getPrincipal());
+      const res: Result = await backendActor.getKYCRequest(
+        identity.getPrincipal()
+      );
       if (res.ok) {
         setUserInfo(res.ok);
-        setEmail(res.ok.email);
+        setEmail(res.ok.body[0].email);
         setLoading(false);
       } else if (res.err) {
         setNoUser(true);
@@ -214,9 +253,7 @@ const Profile = ({ activate }) => {
 
   const updateProfile = async () => {
     try {
-      const res = await backendActor.updateKYCRequest(
-        userInfo
-      );
+      const res = await backendActor.updateKYCRequest(userInfo);
       console.log(res);
       toast.success("Profile Information updated", {
         autoClose: 5000,
@@ -232,7 +269,7 @@ const Profile = ({ activate }) => {
 
   const updateEmail = async () => {
     try {
-      if (email === userInfo.email) {
+      if (email === userInfo.body[0].email) {
         console.log("Not updating the email is the same");
         setUpdating(false);
       } else {
@@ -242,12 +279,16 @@ const Profile = ({ activate }) => {
         const url = generateVerificationUrl(userInfo.id, uniqueString);
 
         await createVerificationEntry(
-          userInfo.userId,
+          userInfo.principal,
           userInfo.id,
           uniqueString
         );
 
-        await sendVerificationEmail(userInfo.firstName, userInfo.email, url);
+        await sendVerificationEmail(
+          userInfo.body[0].firstName,
+          userInfo.body[0].email,
+          url
+        );
         setUpdating(false);
         setShowModal(true);
       }
@@ -279,7 +320,7 @@ const Profile = ({ activate }) => {
                 >
                   <circle cx={4} cy={4} r={3} />
                 </svg>
-                {userInfo.status === "pending"
+                {userInfo.body[0].status === "pending"
                   ? "Pending verification"
                   : "Verified"}
               </span>
@@ -298,7 +339,7 @@ const Profile = ({ activate }) => {
                         <div>
                           <input
                             type="text"
-                            value={userInfo.firstName}
+                            value={userInfo.body[0].firstName}
                             onChange={(e) =>
                               handleFirstNameChange(e.target.value)
                             }
@@ -306,7 +347,7 @@ const Profile = ({ activate }) => {
                           />
                           <span
                             className={`mt-1 text-red-600 text-xs" ${
-                              userInfo.firstName ? `hidden` : `block`
+                              userInfo.body[0].firstName ? `hidden` : `block`
                             }`}
                           >
                             First name is required
@@ -315,7 +356,7 @@ const Profile = ({ activate }) => {
                         <div className="">
                           <input
                             type="text"
-                            value={userInfo.lastName}
+                            value={userInfo.body[0].lastName}
                             onChange={(e) =>
                               handleLastNameChange(e.target.value)
                             }
@@ -323,7 +364,7 @@ const Profile = ({ activate }) => {
                           />
                           <span
                             className={`mt-1 text-red-600 text-xs" ${
-                              userInfo.lastName ? `hidden` : `block`
+                              userInfo.body[0].lastName ? `hidden` : `block`
                             }`}
                           >
                             Last name is required
@@ -332,7 +373,7 @@ const Profile = ({ activate }) => {
                       </div>
                     ) : (
                       <span className="flex-grow">
-                        {userInfo.firstName} {userInfo.lastName}
+                        {userInfo.body[0].firstName} {userInfo.body[0].lastName}
                       </span>
                     )}
 
@@ -342,8 +383,8 @@ const Profile = ({ activate }) => {
                           <button
                             type="submit"
                             disabled={
-                              !userInfo.firstName ||
-                              !userInfo.lastName ||
+                              !userInfo.body[0].firstName ||
+                              !userInfo.body[0].lastName ||
                               updating
                             }
                             onClick={(e) => {
@@ -395,7 +436,7 @@ const Profile = ({ activate }) => {
                       <div className="flex-grow">
                         <input
                           type="email"
-                          value={userInfo.email}
+                          value={userInfo.body[0].email}
                           onChange={(e) => handleEmailChange(e.target.value)}
                           required
                           className="w-full bg-transparent rounded-md border-0 py-1 pl-2 mr-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
@@ -468,26 +509,28 @@ const Profile = ({ activate }) => {
                       <div className="flex-grow">
                         <input
                           type="text"
-                          value={userInfo.organization}
+                          value={userInfo.body[0].organization}
                           onChange={(e) => handleCompanyChange(e.target.value)}
                           className="w-full bg-transparent rounded-md border-0 py-1 pl-2 mr-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                         />
                         <span
                           className={`mt-1 text-red-600 text-xs" ${
-                            userInfo.organization ? `hidden` : `block`
+                            userInfo.body[0].organization ? `hidden` : `block`
                           }`}
                         >
                           Organization name is required
                         </span>
                       </div>
                     ) : (
-                      <span className="flex-grow">{userInfo.organization}</span>
+                      <span className="flex-grow">
+                        {userInfo.body[0].organization}
+                      </span>
                     )}
                     <span className="ml-4 flex-shrink-0">
                       {isEditCompanyMode ? (
                         <button
                           type="submit"
-                          disabled={!userInfo.organization || updating}
+                          disabled={!userInfo.body[0].organization || updating}
                           onClick={(e) => {
                             e.preventDefault();
                             initProfileUpdate("organization");
@@ -534,26 +577,28 @@ const Profile = ({ activate }) => {
                       <div className="flex-grow">
                         <input
                           type="text"
-                          value={userInfo.about}
+                          value={userInfo.body[0].about}
                           onChange={(e) => handleAboutChange(e.target.value)}
                           className="w-full bg-transparent rounded-md border-0 py-1 pl-2 mr-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                         />
                         <span
                           className={`mt-1 text-red-600 text-xs" ${
-                            userInfo.about ? `hidden` : `block`
+                            userInfo.body[0].about ? `hidden` : `block`
                           }`}
                         >
                           About name is required
                         </span>
                       </div>
                     ) : (
-                      <span className="flex-grow">{userInfo.about}</span>
+                      <span className="flex-grow">
+                        {userInfo.body[0].about}
+                      </span>
                     )}
                     <span className="ml-4 flex-shrink-0">
                       {isEditAboutMode ? (
                         <button
                           type="submit"
-                          disabled={!userInfo.about || updating}
+                          disabled={!userInfo.body[0].about || updating}
                           onClick={(e) => {
                             e.preventDefault();
                             initProfileUpdate("about");
@@ -658,7 +703,7 @@ const Profile = ({ activate }) => {
                           <span className="text-gray-300" aria-hidden="true">
                             |
                           </span>
-                          <a href={userInfo.kycIDCopy}>
+                          <a href={userInfo.body[0].kycIDCopy}>
                             <button className="rounded-md font-medium text-primary hover:text-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
                               View
                             </button>
@@ -737,7 +782,7 @@ const Profile = ({ activate }) => {
                           <span className="text-gray-300" aria-hidden="true">
                             |
                           </span>
-                          <a href={userInfo.proofOfAddressCopy}>
+                          <a href={userInfo.body[0].proofOfAddressCopy}>
                             <button
                               type="button"
                               className="rounded-md font-medium text-primary hover:text-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"

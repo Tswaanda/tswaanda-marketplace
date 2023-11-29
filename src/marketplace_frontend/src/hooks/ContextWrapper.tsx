@@ -1,12 +1,15 @@
 import React, { FC, createContext, useContext, useState } from "react";
 import { Actor, HttpAgent, Identity } from "@dfinity/agent";
 import { idlFactory as adminIdlFactory } from "../../../declarations/tswaanda_backend";
+import { canisterId as iiCanId } from "../../../declarations/internet_identity";
 import {
   canisterId,
   idlFactory,
 } from "../../../declarations/marketplace_backend";
 import { AuthClient } from "@dfinity/auth-client";
 import fetch from "cross-fetch";
+
+const env = process.env.DFX_NETWORK || "local";
 
 const days = BigInt(1);
 const hours = BigInt(24);
@@ -19,11 +22,11 @@ const authClient = await AuthClient.create({
   },
 });
 
-const host = "https://icp0.io";
+const livehost = "https://icp0.io";
 const adminCanisterId = "56r5t-tqaaa-aaaal-qb4gq-cai";
 
-// export const host = "http://localhost:4943";
-// export const canisterId = "br5f7-7uaaa-aaaaa-qaaca-cai"
+export const localhost = "http://localhost:4943";
+
 
 // Types
 interface LayoutProps {
@@ -98,9 +101,7 @@ const ContextWrapper: FC<LayoutProps> = ({ children }) => {
 
   const login = async () => {
     await authClient.login({
-      identityProvider: "https://identity.ic0.app/#authorize",
-      //   identityProvider:
-      //     "http://localhost:4943?canisterId=br5f7-7uaaa-aaaaa-qaaca-cai",
+      identityProvider: env === "local" ? `http://localhost:4943?canisterId=${iiCanId}` : "https://identity.ic0.app/#authorize",
       onSuccess: () => {
         checkAuth();
       },
@@ -161,13 +162,6 @@ const ContextWrapper: FC<LayoutProps> = ({ children }) => {
       idleOptions: { idleTimeout: 1000 * 60 * 60 * 24 },
     });
 
-  const getAgent = async (identity?: Identity) =>
-    new HttpAgent({
-      host: "https://ic0.app/",
-      fetch,
-      identity,
-    });
-
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const checkAuth = async () => {
@@ -193,9 +187,12 @@ const ContextWrapper: FC<LayoutProps> = ({ children }) => {
   };
 
   let agent = new HttpAgent({
-    host: host,
+    host: env === "local" ? localhost : livehost,
     identity: identity,
   });
+
+  // TODO: REMOVE THIS
+  agent.fetchRootKey();
 
   const adminBackendActor = Actor.createActor(adminIdlFactory, {
     agent,

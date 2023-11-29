@@ -46,7 +46,7 @@ export default function Account() {
 
   const filteredSubNavigation = subNavigation.filter((item) => {
     if (item.name === "Account") {
-      return !userRegistered ? false : true;
+      return !userRegistered ? true : false;
     }
     return true;
   });
