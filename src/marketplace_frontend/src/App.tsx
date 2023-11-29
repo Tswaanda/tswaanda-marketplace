@@ -8,10 +8,11 @@ import {
   Route,
 } from "react-router-dom";
 
-// Components
 import { Navbar, Footer, Loader, LoginModal } from "./components";
 import { useSelector, useDispatch } from 'react-redux'
-import Article from './components/Documentation/Article';
+import { UserContext } from "./UserContext";
+import { setInit } from "./state/globalSlice";
+import { initActors } from "./utils/storage-config/functions";
 
 // Pages
 const Home = lazy(() => import('./pages/Home'));
@@ -25,18 +26,15 @@ const Support = lazy(() => import ('./pages/Support'));
 const VerifyEmail = lazy(() => import ('./pages/VerifyEmail'));
 const Documentation = lazy(() => import('./pages/Documentation'));
 
-import { UserContext } from "./UserContext";
-
 
 import ShoppingCart from "./pages/ShoppingCart";;
 
 import Orders from "./pages/Orders";
-import { setInit } from "./state/globalSlice";
-import { initActors } from "./utils/storage-config/functions";
-import VerifyNewsLetterEmail from "./pages/VerifyNewsLetterEmail";
 import { useAuth } from "./hooks/ContextWrapper";
+import KYCModal from "./components/KYCModal";
 import HSCodes from "./components/Documentation/Article";
 import Transactions from "./pages/Transactions";
+import VerifyNewsLetterEmail from "./pages/VerifyNewsLetterEmail";
 
 export const loaderStyle: CSSProperties = {
   position: 'absolute',
@@ -53,9 +51,11 @@ const App = () => {
     minHeight: '100vh', // Ensures the container covers the whole viewport
   };
 
-  const { checkAuth } = useAuth();
+  const { isAuthenticated, checkAuth } = useAuth();
 
   const dispatch = useDispatch()
+
+  const [showKycModal, setShowKycModal] = useState(false);
 
     const init = async () => {
       const res = await initActors();
@@ -67,7 +67,14 @@ const App = () => {
     useEffect(() => {
       init()
       checkAuth()
-    }, [])
+    }, []);
+
+    useEffect(() => {
+      
+      if (isAuthenticated) {
+          setShowKycModal(true);
+      }
+  }, [ isAuthenticated]);
 
     return (
       <main className="font-mont" style={containerStyle}>
@@ -76,10 +83,10 @@ const App = () => {
 
           <div className={`${styles.paddingX} ${styles.flexCenter}`}>
             <div className={`${styles.boxWidth}`}>
-              <Navbar  /> 
+              <Navbar  />
+              {showKycModal && <KYCModal show={showKycModal} onClose={() => setShowKycModal(false)} />} 
             </div>
           </div>
-            
                 <Routes>
                   <Route index element={<Home />} />
                   <Route path="*" element={<NotFound />} />
@@ -87,6 +94,7 @@ const App = () => {
                         <div className={`${styles.paddingX} ${styles.flexStart}`}>
                           <div className={`${styles.boxWidth}`}>
                             <Account />
+                            {/* {showKycModal && <KYCModal show={showKycModal} onClose={() => setShowKycModal(false)} />} */}
                           </div>
                         </div>
                       } 
