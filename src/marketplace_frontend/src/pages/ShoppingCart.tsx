@@ -276,7 +276,11 @@ export default function ShoppingCart() {
     if (res.err) {
       setNoAcc(true);
     } else if (res.ok) {
-      setUserInfo(res.ok);
+      if (res.ok.body.length === 0) {
+        setNoAcc(false);
+      } else {
+        setUserInfo(res.ok);
+      }
     }
   };
 
@@ -414,14 +418,11 @@ export default function ShoppingCart() {
         };
         const res = await makeUpdates(product);
         if (!res) {
-          toast.error(
-            "Error when placing order",
-            {
-              autoClose: 10000,
-              position: "top-center",
-              hideProgressBar: true,
-            }
-          );
+          toast.error("Error when placing order", {
+            autoClose: 10000,
+            position: "top-center",
+            hideProgressBar: true,
+          });
           setCreatingOrder(false);
           return;
         }
@@ -458,7 +459,7 @@ export default function ShoppingCart() {
     let farmerRes: Response = await backendActor.getFarmerByEmail(
       product.farmer
     );
-    console.log("Farmer res", farmerRes, product.farmer)
+    console.log("Farmer res", farmerRes, product.farmer);
     if (farmerRes.ok) {
       try {
         let updatedProduct = {
@@ -476,7 +477,6 @@ export default function ShoppingCart() {
       }
     }
   };
-
 
   return (
     <div className="bg-white">
