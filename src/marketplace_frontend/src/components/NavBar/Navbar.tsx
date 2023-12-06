@@ -98,8 +98,6 @@ const Navbar = () => {
     }
   }, [identity]);
 
-  console.log(userInfo);
-
   return (
     <nav className="bg-white pb-4">
       <>

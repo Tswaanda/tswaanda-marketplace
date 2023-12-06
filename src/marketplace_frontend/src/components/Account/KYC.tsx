@@ -163,18 +163,18 @@ export default function KYC() {
         const date = new Date();
         const timestamp = date.getTime();
 
-        // const profilePhotoUrl = await uploadAsset(data.profilePhoto[0]);
-        // console.log("profilePhoto saved", profilePhotoUrl);
+        const profilePhotoUrl = await uploadAsset(data.profilePhoto[0]);
+        console.log("profilePhoto saved", profilePhotoUrl);
 
-        // setStep(2);
+        setStep(2);
 
-        // const kycIDUrl = await uploadAsset(data.kycID[0]);
-        // console.log("kyc id saved", kycIDUrl);
+        const kycIDUrl = await uploadAsset(data.kycID[0]);
+        console.log("kyc id saved", kycIDUrl);
 
-        // setStep(3);
+        setStep(3);
 
-        // const proofOfAddressUrl = await uploadAsset(data.proofOfAddress[0]);
-        // console.log("proof of Address saved", proofOfAddressUrl);
+        const proofOfAddressUrl = await uploadAsset(data.proofOfAddress[0]);
+        console.log("proof of Address saved", proofOfAddressUrl);
 
         const kycRequest: Customer = {
           id: String(uuidv4()),
@@ -189,14 +189,14 @@ export default function KYC() {
               email: data.email,
               organization: data.organization,
               country: data.country,
-              streetAdrees: data.streetAddress,
+              streetAddress: data.streetAddress,
               city: data.city,
               province: data.province,
               zipCode: BigInt(data.zipCode),
               phoneNumber: BigInt(phoneNumber),
-              profilePhoto: "profilePhotoUrl",
-              kycIDCopy: "kycIDUrl",
-              proofOfAddressCopy: "proofOfAddressUrl",
+              profilePhoto: profilePhotoUrl,
+              kycIDCopy: kycIDUrl,
+              proofOfAddressCopy: proofOfAddressUrl,
               status: "pending",
               isUpdated: false,
               isEmailVerified: false,

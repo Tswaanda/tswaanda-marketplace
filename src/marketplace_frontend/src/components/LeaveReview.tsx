@@ -91,13 +91,13 @@ const LeaveReview = ({ setOpenReviewModal, product, getProductReviews }) => {
         const reviewData = {
           id: uuidv4(),
           productId: product.id,
-          userName: userInfo.firstName,
-          userLastName: userInfo.lastName,
+          userName: userInfo.body[0].firstName,
+          userLastName: userInfo.body[0].lastName,
           rating: BigInt(rating),
           review: data.review,
           created: BigInt(Date.now()),
         };
-        // await adminBackendActor.addProductReview(reviewData);
+        await adminBackendActor.addProductReview(reviewData);
         await reviewOnProductUpdate(rating, data.review, farmerInfo, product)
         toast.success("Review submitted successfully. Thank you for the feedback", {
           autoClose: 5000,

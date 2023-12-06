@@ -88,7 +88,7 @@ module {
         email : Text;
         organization : Text;
         country : Text;
-        streetAdrees : Text;
+        streetAddress : Text;
         city : Text;
         province : Text;
         zipCode : Nat;

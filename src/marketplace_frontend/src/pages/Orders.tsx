@@ -12,7 +12,10 @@ const Orders = () => {
 
   const getOrders = async () => {
     const res = await backendActor.getMyOrders(identity.getPrincipal());
-    setRawOrders(res);
+    const filteredOrders = res.filter((order) => {
+      return order.status !== "delivered";
+    });
+    setRawOrders(filteredOrders);
   };
 
   useEffect(() => {

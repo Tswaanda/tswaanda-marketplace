@@ -91,7 +91,7 @@ export default function Transactions() {
                         scope="col"
                         className="w-0 py-3 text-right font-normal"
                       >
-                        Info
+                        <button>More Info</button>
                       </th>
                     </tr>
                   </thead>

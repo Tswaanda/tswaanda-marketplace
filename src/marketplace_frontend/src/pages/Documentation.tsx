@@ -1,6 +1,4 @@
-import { Fragment } from 'react'
-import { Menu, Transition } from '@headlessui/react'
-import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
+
 
 const categories = {
   Information: 'text-green-700 bg-green-50 ring-green-600/20',
@@ -18,8 +16,8 @@ const posts = [
   },
   {
     id: 2,
-    name: 'Listing products on Tswaanda.',
-    href: '#',
+    name: 'Dispute resolution on Tswaanda.',
+    href: '/disputes',
     category: 'Technical',
     createdBy: 'EC',
     lastUpdated: '2023-05-05T00:00Z',

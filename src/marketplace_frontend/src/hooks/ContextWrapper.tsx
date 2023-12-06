@@ -191,9 +191,6 @@ const ContextWrapper: FC<LayoutProps> = ({ children }) => {
     identity: identity,
   });
 
-  // TODO: REMOVE THIS
-  agent.fetchRootKey();
-
   const adminBackendActor = Actor.createActor(adminIdlFactory, {
     agent,
     canisterId: adminCanisterId,

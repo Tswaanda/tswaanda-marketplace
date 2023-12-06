@@ -24,7 +24,7 @@ const Profile = ({ activate }) => {
   const [userInfo, setUserInfo] = useState<Customer | null>(null);
   const [updating, setUpdating] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [noUser, setNoUser] = useState(false);
+  const [isAnon, setIsAnon] = useState(false);
 
   const [email, setEmail] = useState(null);
   const [profilePhoto, setProfilePhoto] = useState(null);
@@ -215,11 +215,16 @@ const Profile = ({ activate }) => {
         identity.getPrincipal()
       );
       if (res.ok) {
-        setUserInfo(res.ok);
+        if (res.ok.body.length === 0) {
+          setIsAnon(true);
+          setLoading(false);
+        } else {
+          setUserInfo(res.ok);
         setEmail(res.ok.body[0].email);
         setLoading(false);
+        }
       } else if (res.err) {
-        setNoUser(true);
+        setIsAnon(true);
         setLoading(false);
       }
     } catch (error) {
@@ -816,7 +821,7 @@ const Profile = ({ activate }) => {
           <Loader />
         </div>
       )}
-      {noUser && (
+      {isAnon && (
         <div className="text-gray-600">
           Nothing to see yet! Lets get to know you... Complete your{" "}
           <button

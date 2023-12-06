@@ -59,7 +59,7 @@ actor Tswaanda {
 
   //-----------------------------Admin intercanister calls------------------------------------------------------
 
-  let adminInterface = actor ("cuj6u-c4aaa-aaaaa-qaajq-cai") : actor {
+  let adminInterface = actor ("56r5t-tqaaa-aaaal-qb4gq-cai") : actor {
     getAllProducts : shared query () -> async [Product];
     filterProducts : shared [Text] -> async [Product];
     getFarmerByEmail : shared (Text) -> async Result.Result<Farmer, Text>;
@@ -171,6 +171,20 @@ actor Tswaanda {
   public shared query func getAllKYCKeys() : async [Principal] {
     let customersArray = Iter.toArray(mapOfCustomers.keys());
     return customersArray;
+  };
+
+  public shared query func getAnonUsers() : async [Customer] {
+    let customersArray = Iter.toArray(mapOfCustomers.vals());
+    let anon = Array.filter<Customer>(
+      customersArray,
+      func customer = switch (customer.body) {
+        case (?body) {
+          false;
+        };
+        case (_) { true };
+      },
+    );
+    return anon;
   };
 
   public shared func deleteKYC(userId : Principal) : async Bool {
