@@ -34,7 +34,7 @@ import VerifyNewsLetterEmail from "./pages/VerifyNewsLetterEmail";
 import ShoppingCart from "./pages/ShoppingCart";
 import Orders from "./pages/Orders";
 import KYCModal from "./components/KYCModal";
-import Article from './components/Documentation/Article';
+import Disputes from "./components/Documentation/Disputes";
 
 export const loaderStyle: CSSProperties = {
   position: 'absolute',
@@ -204,6 +204,14 @@ const App = () => {
                       <div className={`${styles.paddingX} ${styles.flexStart}`}>
                         <div className={`${styles.boxWidth}`}>
                           <HSCodes />
+                        </div>
+                      </div>
+                    } 
+                  />
+                  <Route path="disputes" element={
+                      <div className={`${styles.paddingX} ${styles.flexStart}`}>
+                        <div className={`${styles.boxWidth}`}>
+                          <Disputes />
                         </div>
                       </div>
                     } 
