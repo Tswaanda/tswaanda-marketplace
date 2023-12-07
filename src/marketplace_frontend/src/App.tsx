@@ -21,22 +21,15 @@ const Services = lazy(() => import("./pages/Services"));
 const Support = lazy(() => import("./pages/Support"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const Documentation = lazy(() => import("./pages/Documentation"));
-
-import ShoppingCart from "./pages/ShoppingCart";
-
-import Orders from "./pages/Orders";
 import { useAuth } from "./hooks/ContextWrapper";
-import KYCModal from "./components/KYCModal";
 import HSCodes from "./components/Documentation/Article";
 import Transactions from "./pages/Transactions";
 import VerifyNewsLetterEmail from "./pages/VerifyNewsLetterEmail";
-<<<<<<< HEAD
-=======
 import ShoppingCart from "./pages/ShoppingCart";
 import Orders from "./pages/Orders";
 import KYCModal from "./components/KYCModal";
 import Disputes from "./components/Documentation/Disputes";
->>>>>>> 0acb8f11e4484e5f555be895e39875aa9d8705ac
+import FAQs from "./components/FAQs";
 
 export const loaderStyle: CSSProperties = {
   position: "absolute",
@@ -223,6 +216,16 @@ const App = () => {
               }
             />
             <Route
+              path="faqs"
+              element={
+                <div className={`${styles.paddingX} ${styles.flexStart}`}>
+                  <div className={`${styles.boxWidth}`}>
+                    <FAQs />
+                  </div>
+                </div>
+              }
+            />
+            <Route
               path="hscodes"
               element={
                 <div className={`${styles.paddingX} ${styles.flexStart}`}>
@@ -243,11 +246,11 @@ const App = () => {
               }
             />
             <Route
-              path="transactions"
+              path="disputes"
               element={
                 <div className={`${styles.paddingX} ${styles.flexStart}`}>
                   <div className={`${styles.boxWidth}`}>
-                    <Transactions />
+                    <Disputes />
                   </div>
                 </div>
               }
@@ -265,131 +268,4 @@ const App = () => {
   );
 };
 
-<<<<<<< HEAD
 export default App;
-=======
-                  <Route path="support" element={
-                      <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                        <div className={`${styles.boxWidth}`}>
-                          <Support />
-                        </div>
-                      </div>
-                    } 
-                  />
-
-                  <Route path="shopping-cart" element={
-                      <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                        <div className={`${styles.boxWidth}`}>
-                          <ShoppingCart />
-                        </div>
-                      </div>
-                    } 
-                  />
-
-                  <Route path="orders" element={
-                      <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                        <div className={`${styles.boxWidth}`}>
-                          <Orders />
-                        </div>
-                      </div>
-                    } 
-                  />
-
-                  <Route path="shopping-cart" element={
-                      <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                        <div className={`${styles.boxWidth}`}>
-                          <ShoppingCart />
-                        </div>
-                      </div>
-                    } 
-                  />
-                          
-                  <Route path="market" element={
-                      <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                        <div className={`${styles.boxWidth}`}>
-                          <Market />
-                        </div>
-                      </div>
-                    } 
-                  />
-                  <Route path="product/:id" element={
-                      <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                        <div className={`${styles.boxWidth}`}>
-                          <Product />
-                        </div>
-                      </div>
-                    } 
-                  />
-                  <Route path="verify-email/:userid/:uniquestr" element={
-                      <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                        <div className={`${styles.boxWidth}`}>
-                          <VerifyEmail />
-                        </div>
-                      </div>
-                    } 
-                  />
-                  <Route path="verify-email/:id" element={
-                      <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                        <div className={`${styles.boxWidth}`}>
-                          <VerifyNewsLetterEmail />
-                        </div>
-                      </div>
-                    } 
-                  />
-                  <Route path="documentation" element={
-                      <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                        <div className={`${styles.boxWidth}`}>
-                          <Documentation />
-                        </div>
-                      </div>
-                    } 
-                  />
-                  <Route path="hscodes" element={
-                      <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                        <div className={`${styles.boxWidth}`}>
-                          <HSCodes />
-                        </div>
-                      </div>
-                    } 
-                  />
-                  <Route path="disputes" element={
-                      <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                        <div className={`${styles.boxWidth}`}>
-                          <Disputes />
-                        </div>
-                      </div>
-                    } 
-                  />
-                  <Route path="transactions" element={
-                      <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                        <div className={`${styles.boxWidth}`}>
-                          <Transactions />
-                        </div>
-                      </div>
-                    } 
-                  />
-                  <Route path="transactions" element={
-                      <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                        <div className={`${styles.boxWidth}`}>
-                          <Transactions />
-                        </div>
-                      </div>
-                    } 
-                  />
-                </Routes>
-            
-                    
-            <div className={`${styles.paddingX} ${styles.flexCenter}`}>
-              <div className={`${styles.boxWidth}`}>
-                <Footer/> 
-              </div>
-          </div>
-          </Suspense>
-          </BrowserRouter>
-      </main>
-
-    )
-  }
-
-export default App
->>>>>>> 0acb8f11e4484e5f555be895e39875aa9d8705ac
