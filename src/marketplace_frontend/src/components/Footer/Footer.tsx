@@ -26,7 +26,7 @@ const navigation = {
     { name: "Insights", href: "#" },
   ],
   support: [
-    { name: "FQA", href: "faqs"},
+    { name: "FAQs", href: "faqs"},
     { name: "Pricing", href: "#" },
     { name: "Documentation", href: "/documentation" },
     { name: "Guides", href: "#" },
