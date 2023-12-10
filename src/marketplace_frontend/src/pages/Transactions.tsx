@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Brocoli } from "../../assets/assets";
-import { useAuth } from "../components/ContextWrapper";
+import { useAuth } from "../hooks/ContextWrapper";
 import { ProductOrder } from "../../../declarations/marketplace_backend/marketplace_backend.did";
 
 export default function Transactions() {
@@ -91,7 +91,7 @@ export default function Transactions() {
                         scope="col"
                         className="w-0 py-3 text-right font-normal"
                       >
-                        Info
+                        <button>More Info</button>
                       </th>
                     </tr>
                   </thead>

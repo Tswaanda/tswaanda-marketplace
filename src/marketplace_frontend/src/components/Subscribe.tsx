@@ -11,7 +11,7 @@ import {
 import SubscriptionModal from "./SubscriptionModal";
 import { NewsLetterSubscription } from "../utils/types";
 import Subscribed from "./Subscribed";
-import { useAuth } from "./ContextWrapper";
+import { useAuth } from "../hooks/ContextWrapper";
 
 type FormData = {
   email: string;

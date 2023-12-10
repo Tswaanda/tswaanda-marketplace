@@ -12,8 +12,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import { Loader } from "../components";
-import { useAuth } from "../components/ContextWrapper";
+import { useAuth } from "../hooks/ContextWrapper";
 import { sendOrderPlacedEmail } from "../utils/emails/orderPlacedUpdate";
+import { Customer } from "../../../declarations/marketplace_backend/marketplace_backend.did";
 
 const navigation = {
   pages: [
@@ -44,8 +45,8 @@ export default function ShoppingCart() {
 
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [userInfo, setUserInfo] = useState(null);
-  const [noAcc, setNoAcc] = useState(false);
+  const [userInfo, setUserInfo] = useState<Customer | null>(null);
+  const [isAnon, setIsAnon] = useState(false);
   // const [cartRawProducts, setRawProducts] = useState(null);
   // const [products, setProducts] = useState(null);
   // const [cartItems, setCartItems] = useState(null);
@@ -158,7 +159,7 @@ export default function ShoppingCart() {
 
   // const createMyOrder = async () => {
   //   setCreatingOrder(true);
-  //   if (noAcc) {
+  //   if (isAnon) {
   //     toast.warning(
   //       "Please create a Tswaanda profile to proceed with your order",
   //       {
@@ -274,9 +275,13 @@ export default function ShoppingCart() {
       identity.getPrincipal()
     );
     if (res.err) {
-      setNoAcc(true);
+      setIsAnon(true);
     } else if (res.ok) {
-      setUserInfo(res.ok);
+      if (res.ok.body.length === 0) {
+        setIsAnon(true);
+      } else {
+        setUserInfo(res.ok);
+      }
     }
   };
 
@@ -365,7 +370,7 @@ export default function ShoppingCart() {
     e.preventDefault();
     setCreatingOrder(true);
     try {
-      if (noAcc) {
+      if (isAnon) {
         toast.warning(
           "Please create a Tswaanda profile to proceed with your order",
           {
@@ -402,7 +407,7 @@ export default function ShoppingCart() {
           orderId: String(uuidv4()),
           orderNumber: `TSWA-${lastDigits}${randomLetters}`,
           orderProducts: orderProduct,
-          userEmail: userInfo.email,
+          userEmail: userInfo?.body[0].email,
           orderOwner: identity.getPrincipal(),
           subtotal: parseFloat(subtotal),
           totalPrice: parseFloat(orderTotal),
@@ -414,14 +419,11 @@ export default function ShoppingCart() {
         };
         const res = await makeUpdates(product);
         if (!res) {
-          toast.error(
-            "Error when placing order",
-            {
-              autoClose: 10000,
-              position: "top-center",
-              hideProgressBar: true,
-            }
-          );
+          toast.error("Error when placing order", {
+            autoClose: 10000,
+            position: "top-center",
+            hideProgressBar: true,
+          });
           setCreatingOrder(false);
           return;
         }
@@ -458,7 +460,7 @@ export default function ShoppingCart() {
     let farmerRes: Response = await backendActor.getFarmerByEmail(
       product.farmer
     );
-    console.log("Farmer res", farmerRes, product.farmer)
+    console.log("Farmer res", farmerRes, product.farmer);
     if (farmerRes.ok) {
       try {
         let updatedProduct = {
@@ -476,7 +478,6 @@ export default function ShoppingCart() {
       }
     }
   };
-
 
   return (
     <div className="bg-white">

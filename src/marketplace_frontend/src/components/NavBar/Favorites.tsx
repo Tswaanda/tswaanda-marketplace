@@ -2,8 +2,8 @@ import { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router";
-import { useAuth } from "../ContextWrapper";
 import Loader from "../Loader";
+import { useAuth } from "../../hooks/ContextWrapper";
 
 export default function Favorites({ openFavourites, setOpenFavourites }) {
   const { backendActor, identity, favouritesUpdated, setFavouritesUpdated } =

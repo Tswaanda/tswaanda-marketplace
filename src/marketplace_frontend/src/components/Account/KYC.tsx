@@ -20,7 +20,8 @@ import {
   generateVerificationUrl,
   sendVerificationEmail,
 } from "../../utils/emails/verify";
-import { useAuth } from "../ContextWrapper";
+import { useAuth } from "../../hooks/ContextWrapper";
+import { Customer } from "../../../../declarations/marketplace_backend/marketplace_backend.did";
 
 type FormData = {
   username: string;
@@ -40,7 +41,7 @@ type FormData = {
 };
 
 export default function KYC() {
-const {backendActor, identity} = useAuth()
+  const { backendActor, identity } = useAuth();
 
   const [profilePhoto, setPP] = useState(null);
   const [kycID, setKYCID] = useState(null);
@@ -175,38 +176,39 @@ const {backendActor, identity} = useAuth()
         const proofOfAddressUrl = await uploadAsset(data.proofOfAddress[0]);
         console.log("proof of Address saved", proofOfAddressUrl);
 
-        const kycRequest = {
+        const kycRequest: Customer = {
           id: String(uuidv4()),
-          userId: identity.getPrincipal(),
-          userName: data.username,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          about: data.about,
-          email: data.email,
-          organization: data.organization,
-          country: data.country,
-          streetAdrees: data.streetAddress,
-          city: data.city,
-          province: data.province,
-          zipCode: BigInt(data.zipCode),
-          phoneNumber: BigInt(phoneNumber),
-          profilePhoto: profilePhotoUrl,
-          kycIDCopy: kycIDUrl,
-          proofOfAddressCopy: proofOfAddressUrl,
-          status: "pending",
-          dateCreated: BigInt(timestamp),
-          isUpdated: false,
-          isEmailVerified: false,
-          membershipLevel: "general",
-          userWebsite: "non",
-          isFarmer: false,
-          isBuyer: true,
-          isStaff: false,
-          pushNotification: {
-            email: false,
-            sms: false,
-            everything: false,
-          },
+          principal: identity.getPrincipal(),
+          created: BigInt(timestamp),
+          body: [
+            {
+              userName: data.username,
+              firstName: data.firstName,
+              lastName: data.lastName,
+              about: data.about,
+              email: data.email,
+              organization: data.organization,
+              country: data.country,
+              streetAddress: data.streetAddress,
+              city: data.city,
+              province: data.province,
+              zipCode: BigInt(data.zipCode),
+              phoneNumber: BigInt(phoneNumber),
+              profilePhoto: profilePhotoUrl,
+              kycIDCopy: kycIDUrl,
+              proofOfAddressCopy: proofOfAddressUrl,
+              status: "pending",
+              isUpdated: false,
+              isEmailVerified: false,
+              membershipLevel: "general",
+              userWebsite: "non",
+              pushNotification: {
+                email: false,
+                sms: false,
+                everything: false,
+              },
+            },
+          ],
         };
 
         /// Sending verification email section
@@ -218,15 +220,19 @@ const {backendActor, identity} = useAuth()
           uniqueString
         );
 
-        await createVerificationEntry(identity.getPrincipal(), kycRequest.id, uniqueString);
+        const res = await backendActor.createKYCRequest(kycRequest);
+
+        await createVerificationEntry(
+          identity.getPrincipal(),
+          kycRequest.id,
+          uniqueString
+        );
 
         await sendVerificationEmail(
           data.firstName,
           data.email,
           verificationUrl
         );
-
-        const res = await backendActor.createKYCRequest(kycRequest);
         if (res) {
           setShow(true);
         } else {

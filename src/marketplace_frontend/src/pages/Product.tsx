@@ -13,7 +13,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import LeaveReview from "../components/LeaveReview";
 import ToolTip from "../components/ToolTip";
-import { useAuth } from "../components/ContextWrapper";
+import { useAuth } from "../hooks/ContextWrapper";
 import { ThreeCircles } from "react-loader-spinner";
 
 import { 

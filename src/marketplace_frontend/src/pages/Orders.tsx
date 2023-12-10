@@ -2,7 +2,7 @@ import React from "react";
 import OrderDetails from "../components/Orders/OrderDetails";
 import OrderHistory from "../components/Orders/OrderHistory";
 import { useEffect, useState } from "react";
-import { useAuth } from "../components/ContextWrapper";
+import { useAuth } from "../hooks/ContextWrapper";
 
 const Orders = () => {
 
@@ -12,7 +12,10 @@ const Orders = () => {
 
   const getOrders = async () => {
     const res = await backendActor.getMyOrders(identity.getPrincipal());
-    setRawOrders(res);
+    const filteredOrders = res.filter((order) => {
+      return order.status !== "delivered";
+    });
+    setRawOrders(filteredOrders);
   };
 
   useEffect(() => {
