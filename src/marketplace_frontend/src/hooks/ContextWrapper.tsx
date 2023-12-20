@@ -1,15 +1,38 @@
 import React, { FC, createContext, useContext, useState } from "react";
-import { Actor, HttpAgent, Identity } from "@dfinity/agent";
-import { idlFactory as adminIdlFactory } from "../../../declarations/tswaanda_backend";
+import {
+  Actor,
+  ActorSubclass,
+  HttpAgent,
+  Identity,
+  SignIdentity,
+} from "@dfinity/agent";
+import {
+  idlFactory as adminIdlFactory,
+  tswaanda_backend,
+} from "../../../declarations/tswaanda_backend";
 import { canisterId as iiCanId } from "../../../declarations/internet_identity";
 import {
-  canisterId,
-  idlFactory,
+  canisterId as marketCanId,
+  idlFactory as marketIdlFactory,
 } from "../../../declarations/marketplace_backend";
 import { AuthClient } from "@dfinity/auth-client";
-import fetch from "cross-fetch";
+import {
+  _SERVICE,
+  AppMessage,
+} from "../../../declarations/tswaanda_backend/tswaanda_backend.did";
+import IcWebSocket from "ic-websocket-js";
 
-const env = process.env.DFX_NETWORK || "local";
+const network = process.env.DFX_NETWORK || "local";
+
+const gatewayUrl = "wss://gateway.icws.io";
+const icUrl = "https://icp0.io";
+const localGatewayUrl = "ws://127.0.0.1:8080";
+const localICUrl = "http://127.0.0.1:4943";
+const localhost = "http://localhost:8081";
+const host = "https://icp0.io";
+
+const adminCanisterId = "56r5t-tqaaa-aaaal-qb4gq-cai";
+const adminLocalCanisterId = "asrmz-lmaaa-aaaaa-qaaeq-cai";
 
 const days = BigInt(1);
 const hours = BigInt(24);
@@ -22,26 +45,18 @@ const authClient = await AuthClient.create({
   },
 });
 
-const livehost = "https://icp0.io";
-const adminCanisterId = "56r5t-tqaaa-aaaal-qb4gq-cai";
-
-export const localhost = "http://localhost:4943";
-
-
 // Types
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 type Context = {
-  principleId: string;
   identity: any;
   backendActor: any;
   adminBackendActor: any;
   isAuthenticated: boolean;
   favouritesUpdated: boolean;
-  setContextPrincipleID: (_value: string) => void;
-  setUserIdentity: (_value: any) => void;
+  ws: any;
   setFavouritesUpdated: (_value: boolean) => void;
   login: () => void;
   nfidlogin: () => void;
@@ -50,19 +65,13 @@ type Context = {
 };
 
 const initialContext: Context = {
-  principleId: "",
   identity: null,
   backendActor: null,
   adminBackendActor: null,
   isAuthenticated: false,
   favouritesUpdated: false,
-  setContextPrincipleID: (string): void => {
-    throw new Error("setContext function must be overridden");
-  },
+  ws: null,
   setFavouritesUpdated: (boolean): void => {
-    throw new Error("setContext function must be overridden");
-  },
-  setUserIdentity: (any): void => {
     throw new Error("setContext function must be overridden");
   },
   login: (): void => {
@@ -86,22 +95,20 @@ export const useAuth = () => {
 };
 
 const ContextWrapper: FC<LayoutProps> = ({ children }) => {
-  const [principleId, setPrincipleId] = useState("");
-  const [identity, setIdentity] = useState(null);
+  const [identity, setIdentity] = useState<Identity | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [favouritesUpdated, setFavouritesUpdated] = useState(false);
-
-  const setContextPrincipleID = (value: string) => {
-    setPrincipleId(value);
-  };
-
-  const setUserIdentity = (value: any) => {
-    setIdentity(value);
-  };
+  const [backendActor, setBackendActor] = useState<ActorSubclass | null>(null);
+  const [ws, setWs] = useState<IcWebSocket<_SERVICE, AppMessage> | null>(null);
+  const [adminBackendActor, setAdminBackendActor] =
+    useState<ActorSubclass | null>(null);
 
   const login = async () => {
     await authClient.login({
-      identityProvider: env === "local" ? `http://localhost:4943?canisterId=${iiCanId}` : "https://identity.ic0.app/#authorize",
+      identityProvider:
+        network === "local"
+          ? `http://localhost:4943?canisterId=${iiCanId}`
+          : "https://identity.ic0.app/#authorize",
       onSuccess: () => {
         checkAuth();
       },
@@ -109,7 +116,9 @@ const ContextWrapper: FC<LayoutProps> = ({ children }) => {
     });
   };
 
-  // //////////////////////////////////////////NFID LOGIN//////////////////////////////////////////////////////////////////////////////////
+  /************************
+   * NFID LOGIN
+   **********************/
 
   const nfidlogin = async () => {
     const authClient = await getAuthClient();
@@ -162,56 +171,67 @@ const ContextWrapper: FC<LayoutProps> = ({ children }) => {
       idleOptions: { idleTimeout: 1000 * 60 * 60 * 24 },
     });
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /*****************************************
+   * CHECK AUTH AND WEBSOCKETS CONNECTION
+   *****************************************/
 
   const checkAuth = async () => {
     if (await authClient.isAuthenticated()) {
       setIsAuthenticated(true);
-      const identity = authClient.getIdentity();
-      setIdentity(identity);
-      setContextPrincipleID(identity.getPrincipal().toText());
+      const _identity = authClient.getIdentity();
+      setIdentity(_identity);
+
+      let agent = new HttpAgent({
+        host: network === "local" ? localhost : host,
+        identity: _identity,
+      });
+
+      if (network === "local") {
+        agent.fetchRootKey();
+      }
+
+      const _backendActor = Actor.createActor(marketIdlFactory, {
+        agent,
+        canisterId: marketCanId,
+      });
+      setBackendActor(_backendActor);
+
+      const adminBackendActor = Actor.createActor(adminIdlFactory, {
+        agent,
+        canisterId: adminCanisterId,
+      });
+      setAdminBackendActor(adminBackendActor);
+
+      const _ws = new IcWebSocket(
+        network === "local" ? localGatewayUrl : gatewayUrl,
+        undefined,
+        {
+          canisterId:
+            network === "local" ? adminLocalCanisterId : adminCanisterId,
+          canisterActor: tswaanda_backend,
+          identity: _identity as SignIdentity,
+          networkUrl: network === "local" ? localICUrl : icUrl,
+        }
+      );
+      setWs(_ws);
     }
   };
 
-  const handleLogout = async () => {
+  const logout = async () => {
     await authClient.logout();
     setIsAuthenticated(false);
     setIdentity(null);
-    setContextPrincipleID("");
   };
-
-  const logout = async () => {
-    await handleLogout();
-    setContextPrincipleID("");
-    setIdentity(null);
-  };
-
-  let agent = new HttpAgent({
-    host: env === "local" ? localhost : livehost,
-    identity: identity,
-  });
-
-  const adminBackendActor = Actor.createActor(adminIdlFactory, {
-    agent,
-    canisterId: adminCanisterId,
-  });
-
-  const backendActor = Actor.createActor(idlFactory, {
-    agent,
-    canisterId: canisterId,
-  });
   return (
     <WalletContext.Provider
       value={{
-        principleId,
-        setContextPrincipleID,
-        setUserIdentity,
         identity,
         backendActor,
         adminBackendActor,
         isAuthenticated,
         favouritesUpdated,
         setFavouritesUpdated,
+        ws,
         nfidlogin,
         login,
         logout,

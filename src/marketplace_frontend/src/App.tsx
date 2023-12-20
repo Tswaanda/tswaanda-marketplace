@@ -45,7 +45,7 @@ const App = () => {
     minHeight: "100vh", // Ensures the container covers the whole viewport
   };
 
-  const { isAuthenticated, checkAuth } = useAuth();
+  const { isAuthenticated, checkAuth, ws } = useAuth();
 
   const dispatch = useDispatch();
 
@@ -60,6 +60,22 @@ const App = () => {
     init();
     checkAuth();
   }, []);
+
+  // Websocket connection
+  useEffect(() => {
+    if (!ws) {
+      return;
+    }
+    ws.onopen = () => {
+      console.log("Connected to the canister");
+    };
+    ws.onclose = () => {
+      console.log("Disconnected from the canister");
+    };
+    ws.onerror = (error: any) => {
+      console.log("Error:", error);
+    };
+  }, [ws]);
 
   return (
     <main className="font-mont" style={containerStyle}>
