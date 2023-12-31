@@ -30,6 +30,8 @@ import Orders from "./pages/Orders";
 import KYCModal from "./components/KYCModal";
 import Disputes from "./components/Documentation/Disputes";
 import FAQs from "./components/FAQs";
+import { handleWebSocketMessage } from "./service/main.js";
+import Notifications from "./pages/Notifications";
 
 export const loaderStyle: CSSProperties = {
   position: "absolute",
@@ -66,11 +68,12 @@ const App = () => {
   useEffect(() => {
     if (identity && ws) {
       ws.onmessage = async (event: any) => {
+        await handleWebSocketMessage(event);
         const recievedMessage = event.data;
         console.log("Message received from the canister", recievedMessage);
       };
     }
-  } , [identity, ws]);
+  }, [identity, ws]);
 
   return (
     <main className="font-mont" style={containerStyle}>
@@ -138,6 +141,17 @@ const App = () => {
                 <div className={`${styles.paddingX} ${styles.flexStart}`}>
                   <div className={`${styles.boxWidth}`}>
                     <Support />
+                  </div>
+                </div>
+              }
+            />
+
+            <Route
+              path="notifications"
+              element={
+                <div className={`${styles.paddingX} ${styles.flexStart}`}>
+                  <div className={`${styles.boxWidth}`}>
+                    <Notifications/>
                   </div>
                 </div>
               }

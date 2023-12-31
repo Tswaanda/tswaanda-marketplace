@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, Fragment } from "react";
+import { useEffect, useState, Fragment } from "react";
 import { Dialog } from "@headlessui/react";
 import {
   Bars3Icon,
@@ -57,7 +57,7 @@ const Navbar = () => {
 
   const [userInfo, setUserInfo] = useState<Customer | null>(null);
 
-  const [cartItems, setCartItems] = useState<any[]| null>(null);
+  const [cartItems, setCartItems] = useState<any[] | null>(null);
 
   const [favoriteItems, setFavoriteItems] = useState();
 
@@ -75,14 +75,16 @@ const Navbar = () => {
   }
 
   const getMyKYC = async () => {
-    const info: Response = await backendActor.getKYCRequest(
-      identity?.getPrincipal()
-    );
-    if (info.ok) {
-      setUserInfo(info.ok);
-      dispatch(setIsRegistered());
-    } else {
-      setShowKycModal(true);
+    if (isAuthenticated) {
+      const info: Response = await backendActor.getKYCRequest(
+        identity?.getPrincipal()
+      );
+      if (info.ok) {
+        setUserInfo(info.ok);
+        dispatch(setIsRegistered());
+      } else {
+        setShowKycModal(true);
+      }
     }
   };
 
@@ -299,13 +301,13 @@ const Navbar = () => {
                         </div>
                       </Link>
                     )}
-                    <button
-                      type="button"
-                      className="flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
+                    <Link
+                      to={"/notifications"}
+                      className="flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 "
                     >
                       <span className="sr-only">View notifications</span>
                       <BellIcon className="h-6 w-6" aria-hidden="true" />
-                    </button>
+                    </Link>
 
                     {/* Profile dropdown */}
                     <Menu as="div" className="relative ml-4 flex-shrink-0">
@@ -315,7 +317,7 @@ const Navbar = () => {
                           <img
                             className="h-8 w-8 rounded-full"
                             src={
-                              userInfo?.body[0]?.profilePhoto 
+                              userInfo?.body[0]?.profilePhoto
                                 ? userInfo.body[0].profilePhoto
                                 : user.imageUrl
                             }

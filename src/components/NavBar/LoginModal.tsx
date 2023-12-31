@@ -1,7 +1,6 @@
 import { Fragment, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { LockClosedIcon } from '@heroicons/react/24/outline'
-import { ICPLogo } from '../../assets/assets'
 import { useAuth } from '../../hooks/ContextWrapper';
 
 

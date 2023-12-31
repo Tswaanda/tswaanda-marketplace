@@ -59,7 +59,7 @@ actor Tswaanda {
 
   //-----------------------------Admin intercanister calls------------------------------------------------------
 
-  let adminInterface = actor ("bw4dl-smaaa-aaaaa-qaacq-cai") : actor {
+  let adminInterface = actor ("asrmz-lmaaa-aaaaa-qaaeq-cai") : actor {
     getAllProducts : shared query () -> async [Product];
     filterProducts : shared [Text] -> async [Product];
     getFarmerByEmail : shared (Text) -> async Result.Result<Farmer, Text>;

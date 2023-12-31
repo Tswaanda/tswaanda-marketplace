@@ -21,8 +21,10 @@ const Features = (props) => {
   };
 
   useEffect(() => {
-    getAllProducts();
-  }, []);
+    if (adminBackendActor) {
+      getAllProducts();
+    }
+  }, [adminBackendActor]);
 
   if (loading)
     return (

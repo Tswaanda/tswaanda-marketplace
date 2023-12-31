@@ -1,4 +1,10 @@
-import React, { FC, createContext, useContext, useEffect, useState } from "react";
+import React, {
+  FC,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import {
   Actor,
   ActorSubclass,
@@ -21,6 +27,8 @@ import {
   AppMessage,
 } from "../declarations/tswaanda_backend/tswaanda_backend.did";
 import IcWebSocket from "ic-websocket-js";
+// @ts-ignore
+import icblast from "@infu/icblast";
 
 const network = process.env.DFX_NETWORK || "local";
 
@@ -28,11 +36,11 @@ const gatewayUrl = "wss://gateway.icws.io";
 const icUrl = "https://icp0.io";
 const localGatewayUrl = "ws://127.0.0.1:8080";
 const localICUrl = "http://127.0.0.1:4943";
-const localhost = "http://localhost:8081";
+const localhost = "http://localhost:3000";
 const host = "https://icp0.io";
 
 const adminCanisterId = "56r5t-tqaaa-aaaal-qb4gq-cai";
-const adminLocalCanisterId = "bw4dl-smaaa-aaaaa-qaacq-cai";
+const adminLocalCanisterId = "asrmz-lmaaa-aaaaa-qaaeq-cai";
 
 const days = BigInt(1);
 const hours = BigInt(24);
@@ -176,49 +184,52 @@ const ContextWrapper: FC<LayoutProps> = ({ children }) => {
    *****************************************/
 
   const checkAuth = async () => {
-    if (await authClient.isAuthenticated()) {
-      setIsAuthenticated(true);
-      const _identity = authClient.getIdentity();
-      setIdentity(_identity);
+    const isAuthenticated = await authClient.isAuthenticated();
+    setIsAuthenticated(isAuthenticated);
+    const _identity = authClient.getIdentity();
+    setIdentity(_identity);
 
-      let agent = new HttpAgent({
-        host: network === "local" ? localhost : host,
-        identity: _identity,
-      });
+    let agent = new HttpAgent({
+      host: network === "local" ? localhost : host,
+      identity: _identity,
+    });
 
-      if (network === "local") {
-        agent.fetchRootKey();
-      }
-
-      const _backendActor = Actor.createActor(marketIdlFactory, {
-        agent,
-        canisterId: marketCanId,
-      });
-      setBackendActor(_backendActor);
-
-      const adminBackendActor = Actor.createActor(adminIdlFactory, {
-        agent,
-        canisterId: adminCanisterId,
-      });
-      setAdminBackendActor(adminBackendActor);
-
-      const _ws = new IcWebSocket(
-        network === "local" ? localGatewayUrl : gatewayUrl,
-        undefined,
-        {
-          canisterId:
-            network === "local" ? adminLocalCanisterId : adminCanisterId,
-          canisterActor: tswaanda_backend,
-          identity: _identity as SignIdentity,
-          networkUrl: network === "local" ? localICUrl : icUrl,
-        }
-      );
-      setWs(_ws);
+    if (network === "local") {
+      agent.fetchRootKey();
     }
+
+    const _backendActor = Actor.createActor(marketIdlFactory, {
+      agent,
+      canisterId: marketCanId,
+    });
+    setBackendActor(_backendActor);
+
+    let ic = icblast({
+      local: network === "local" ? true : false,
+      identity: identity,
+    });
+
+    let _adminActor = await ic(
+      network === "local" ? adminLocalCanisterId : adminCanisterId
+    );
+    setAdminBackendActor(_adminActor);
+
+    const _ws = new IcWebSocket(
+      network === "local" ? localGatewayUrl : gatewayUrl,
+      undefined,
+      {
+        canisterId:
+          network === "local" ? adminLocalCanisterId : adminCanisterId,
+        canisterActor: tswaanda_backend,
+        identity: _identity as SignIdentity,
+        networkUrl: network === "local" ? localICUrl : icUrl,
+      }
+    );
+    setWs(_ws);
   };
 
-   // Websocket connection
-   useEffect(() => {
+  // Websocket connection
+  useEffect(() => {
     if (!ws) {
       return;
     }

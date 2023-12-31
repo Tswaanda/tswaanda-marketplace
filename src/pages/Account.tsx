@@ -16,7 +16,7 @@ import Profile from "../components/Account/Profile";
 import Wallet from "../components/Wallet";
 import Billing from "../components/Account/Billing";
 
-import Notifications from "../components/Account/Notifications";
+import Notifications from "./Notifications";
 import KYC from "../components/Account/KYC";
 
 import Transactions from "./Transactions";

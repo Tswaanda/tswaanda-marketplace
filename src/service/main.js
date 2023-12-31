@@ -42,7 +42,10 @@ const requestPermission = async () => {
 }
 
 // WebSocket Message Handling
-const handleWebSocketMessage = async (event) => {
+export const handleWebSocketMessage = async (event) => {
+  if (!isPermitted) {
+    await requestPermission();
+  }
   if (Notification.permission === 'granted') {
     console.log(event.data)
     const data = event.data
@@ -50,7 +53,7 @@ const handleWebSocketMessage = async (event) => {
     const options = {
       body: data.message, 
       icon: '../../assets/logo.png' 
-    };
+    }
 
     // Sending a message to the service worker to show a notification
     if (navigator.serviceWorker.controller) {
@@ -64,13 +67,3 @@ const handleWebSocketMessage = async (event) => {
     }
   }
 }
-
-ws.onmessage = async (event) => {
-  if (!isPermitted) {
-    await requestPermission();
-  }
-  handleWebSocketMessage(event);
-}
-
-
-requestPermission()
