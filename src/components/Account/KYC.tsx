@@ -6,7 +6,7 @@ import { CheckCircleIcon } from "@heroicons/react/24/outline";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
-import { uploadFile } from "../../utils/storage-config/functions";
+import { uploadFile } from "../../storage-config/functions";
 import { useDropzone } from "react-dropzone";
 import { countryListAllIsoData } from "../../constants";
 import Loader from "../Loader";

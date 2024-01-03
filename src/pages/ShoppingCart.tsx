@@ -264,7 +264,7 @@ export default function ShoppingCart() {
     );
     if (res.ok) {
       setCartItem(res.ok);
-    } else {
+    } else if (res.err) {
       setLoading(false);
       console.log(res.err);
     }
@@ -286,27 +286,27 @@ export default function ShoppingCart() {
   };
 
   useEffect(() => {
-    if (identity) {
+    if (identity && adminBackendActor) {
       getCartItems();
       getUserDetails();
     }
-  }, [identity]);
+  }, [identity, adminBackendActor]);
 
   useEffect(() => {
     if (cartItem) {
-      const getProduct = async (id) => {
-        const res: Response = await adminBackendActor.getProductById(id);
-        if (res.ok) {
-          setProduct(res.ok);
-          setLoading(false);
-        } else {
-          console.log(res.err);
-          setLoading(false);
-        }
-      };
       getProduct(cartItem.id);
     }
   }, [cartItem]);
+
+  const getProduct = async (id) => {
+    const res: Response = await adminBackendActor.getProductById(id);
+    if (res.ok) {
+      setProduct(res.ok);
+      setLoading(false);
+    } else {
+      setLoading(false);
+    }
+  };
 
   // Removing a product from the cartItems array and from the backend as well
 

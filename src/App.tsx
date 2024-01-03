@@ -8,7 +8,7 @@ import { Navbar, Footer, Loader, LoginModal } from "./components";
 import { useSelector, useDispatch } from "react-redux";
 import { UserContext } from "./UserContext";
 import { setInit } from "./state/globalSlice";
-import { initActors } from "./utils/storage-config/functions";
+import { initActors } from "./storage-config/functions";
 
 // Pages
 const Home = lazy(() => import("./pages/Home"));
@@ -27,10 +27,8 @@ import Transactions from "./pages/Transactions";
 import VerifyNewsLetterEmail from "./pages/VerifyNewsLetterEmail";
 import ShoppingCart from "./pages/ShoppingCart";
 import Orders from "./pages/Orders";
-import KYCModal from "./components/KYCModal";
 import Disputes from "./components/Documentation/Disputes";
 import FAQs from "./components/FAQs";
-import { handleWebSocketMessage } from "./service/main.js";
 import Notifications from "./pages/Notifications";
 
 export const loaderStyle: CSSProperties = {
@@ -47,8 +45,6 @@ const App = () => {
     minHeight: "100vh", // Ensures the container covers the whole viewport
   };
 
-  const { checkAuth, identity, ws } = useAuth();
-
   const dispatch = useDispatch();
 
   const init = async () => {
@@ -60,20 +56,13 @@ const App = () => {
 
   useEffect(() => {
     init();
-    checkAuth();
   }, []);
 
-  console.log(identity?.getPrincipal().toString());
+  const { identity } = useAuth();
 
-  useEffect(() => {
-    if (identity && ws) {
-      ws.onmessage = async (event: any) => {
-        await handleWebSocketMessage(event);
-        const recievedMessage = event.data;
-        console.log("Message received from the canister", recievedMessage);
-      };
-    }
-  }, [identity, ws]);
+  console.log("Your principal", identity?.getPrincipal().toString());
+
+
 
   return (
     <main className="font-mont" style={containerStyle}>

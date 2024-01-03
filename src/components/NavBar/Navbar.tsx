@@ -17,8 +17,8 @@ import Favorites from "./Favorites";
 import LoginModal from "./LoginModal";
 import { useAuth } from "../../hooks/ContextWrapper";
 import KYCModal from "../KYCModal";
-import { Customer } from "../../declarations/marketplace_backend/marketplace_backend.did";
 import { Logo } from "../../assets";
+import { CustomerType } from "./types";
 
 const user = {
   imageUrl: "./avatar.webp",
@@ -55,7 +55,7 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openFavourites, setOpenFavourites] = useState(false);
 
-  const [userInfo, setUserInfo] = useState<Customer | null>(null);
+  const [userInfo, setUserInfo] = useState<CustomerType | null>(null);
 
   const [cartItems, setCartItems] = useState<any[] | null>(null);
 
@@ -317,8 +317,8 @@ const Navbar = () => {
                           <img
                             className="h-8 w-8 rounded-full"
                             src={
-                              userInfo?.body[0]?.profilePhoto
-                                ? userInfo.body[0].profilePhoto
+                              userInfo?.body.profilePhoto
+                                ? userInfo.body.profilePhoto
                                 : user.imageUrl
                             }
                             alt=""
@@ -422,7 +422,7 @@ const Navbar = () => {
                       <img
                         className="h-10 w-10 rounded-full"
                         src={userInfo?.body[0]?.profilePhoto || user.imageUrl}
-                        alt=""
+                        alt="profilePhoto"
                       />
                     </div>
                     {userInfo && (

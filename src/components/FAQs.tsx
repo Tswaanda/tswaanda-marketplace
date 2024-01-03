@@ -1,7 +1,6 @@
 import { Disclosure } from "@headlessui/react";
-import { StarIcon } from "@heroicons/react/20/solid";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { faqs } from "../constants";
+import { faqs } from "../constants/index";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");

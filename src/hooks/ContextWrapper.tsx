@@ -21,7 +21,11 @@ import {
   canisterId as marketCanId,
   idlFactory as marketIdlFactory,
 } from "../declarations/marketplace_backend";
-import { AuthClient } from "@dfinity/auth-client";
+import {
+  AuthClient,
+  AuthClientCreateOptions,
+  AuthClientLoginOptions,
+} from "@dfinity/auth-client";
 import {
   _SERVICE,
   AppMessage,
@@ -29,6 +33,9 @@ import {
 import IcWebSocket from "ic-websocket-js";
 // @ts-ignore
 import icblast from "@infu/icblast";
+import { handleWebSocketMessage } from "../service/main.js";
+import { set } from "zod";
+import { processWsMessage } from "./utils";
 
 const network = process.env.DFX_NETWORK || "local";
 
@@ -40,7 +47,7 @@ const localhost = "http://localhost:3000";
 const host = "https://icp0.io";
 
 const adminCanisterId = "56r5t-tqaaa-aaaal-qb4gq-cai";
-const adminLocalCanisterId = "asrmz-lmaaa-aaaaa-qaaeq-cai";
+const adminLocalCanisterId = "bw4dl-smaaa-aaaaa-qaacq-cai";
 
 const days = BigInt(1);
 const hours = BigInt(24);
@@ -65,11 +72,11 @@ type Context = {
   isAuthenticated: boolean;
   favouritesUpdated: boolean;
   ws: any;
+  wsMessage: AppMessage | null;
   setFavouritesUpdated: (_value: boolean) => void;
   login: () => void;
   nfidlogin: () => void;
   logout: () => void;
-  checkAuth: () => void;
 };
 
 const initialContext: Context = {
@@ -79,6 +86,7 @@ const initialContext: Context = {
   isAuthenticated: false,
   favouritesUpdated: false,
   ws: null,
+  wsMessage: null,
   setFavouritesUpdated: (boolean): void => {
     throw new Error("setContext function must be overridden");
   },
@@ -91,18 +99,30 @@ const initialContext: Context = {
   nfidlogin: (): void => {
     throw new Error("nfidLogin function must be overridden");
   },
-  checkAuth: (): void => {
-    throw new Error("checkAuth function must be overridden");
+};
+
+const AuthContext = createContext<Context>(initialContext);
+
+interface DefaultOptions {
+  createOptions: AuthClientCreateOptions;
+  loginOptions: AuthClientLoginOptions;
+}
+
+const defaultOptions: DefaultOptions = {
+  createOptions: {
+    idleOptions: {
+      disableIdle: true,
+    },
+  },
+  loginOptions: {
+    identityProvider:
+      process.env.DFX_NETWORK === "ic"
+        ? "https://identity.ic0.app/#authorize"
+        : `http://localhost:4943?canisterId=${iiCanId}`,
   },
 };
 
-const WalletContext = createContext<Context>(initialContext);
-
-export const useAuth = () => {
-  return useContext(WalletContext);
-};
-
-const ContextWrapper: FC<LayoutProps> = ({ children }) => {
+export const useAuthClient = (options = defaultOptions) => {
   const [identity, setIdentity] = useState<Identity | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [favouritesUpdated, setFavouritesUpdated] = useState(false);
@@ -110,17 +130,20 @@ const ContextWrapper: FC<LayoutProps> = ({ children }) => {
   const [ws, setWs] = useState<IcWebSocket<_SERVICE, AppMessage> | null>(null);
   const [adminBackendActor, setAdminBackendActor] =
     useState<ActorSubclass | null>(null);
+  const [wsMessage, setWsMessage] = useState<AppMessage| null>(null);
 
-  const login = async () => {
-    await authClient.login({
-      identityProvider:
-        network === "local"
-          ? `http://localhost:4943?canisterId=${iiCanId}`
-          : "https://identity.ic0.app/#authorize",
+  useEffect(() => {
+    AuthClient.create(options.createOptions).then(async (client) => {
+      checkAuth(client);
+    });
+  }, []);
+
+  const login = () => {
+    authClient?.login({
+      ...options.loginOptions,
       onSuccess: () => {
-        checkAuth();
+        checkAuth(authClient);
       },
-      maxTimeToLive: days * hours * nanoseconds,
     });
   };
 
@@ -132,7 +155,7 @@ const ContextWrapper: FC<LayoutProps> = ({ children }) => {
     const authClient = await getAuthClient();
     const isAuthenticated = await authClient.isAuthenticated();
     if (isAuthenticated) {
-      checkAuth();
+      checkAuth(authClient);
       return;
     }
 
@@ -162,7 +185,7 @@ const ContextWrapper: FC<LayoutProps> = ({ children }) => {
           const identity = authClient.getIdentity();
           setIsAuthenticated(true);
           setIdentity(identity);
-          checkAuth();
+          checkAuth(authClient);
         },
         onError: (err) => {
           console.log("error", err);
@@ -183,10 +206,10 @@ const ContextWrapper: FC<LayoutProps> = ({ children }) => {
    * CHECK AUTH AND WEBSOCKETS CONNECTION
    *****************************************/
 
-  const checkAuth = async () => {
-    const isAuthenticated = await authClient.isAuthenticated();
+  const checkAuth = async (client: AuthClient) => {
+    const isAuthenticated = await client.isAuthenticated();
     setIsAuthenticated(isAuthenticated);
-    const _identity = authClient.getIdentity();
+    const _identity = client.getIdentity();
     setIdentity(_identity);
 
     let agent = new HttpAgent({
@@ -206,7 +229,7 @@ const ContextWrapper: FC<LayoutProps> = ({ children }) => {
 
     let ic = icblast({
       local: network === "local" ? true : false,
-      identity: identity,
+      identity: _identity,
     });
 
     let _adminActor = await ic(
@@ -242,6 +265,12 @@ const ContextWrapper: FC<LayoutProps> = ({ children }) => {
     ws.onerror = (error: any) => {
       console.log("Error:", error);
     };
+    ws.onmessage = async (event: any) => {
+      let res = processWsMessage(event.data);
+      await handleWebSocketMessage(res);
+      const recievedMessage = event.data;
+      setWsMessage(recievedMessage);
+    };
   }, [ws]);
 
   const logout = async () => {
@@ -249,25 +278,32 @@ const ContextWrapper: FC<LayoutProps> = ({ children }) => {
     setIsAuthenticated(false);
     setIdentity(null);
   };
-  return (
-    <WalletContext.Provider
-      value={{
-        identity,
-        backendActor,
-        adminBackendActor,
-        isAuthenticated,
-        favouritesUpdated,
-        setFavouritesUpdated,
-        ws,
-        nfidlogin,
-        login,
-        logout,
-        checkAuth,
-      }}
-    >
-      {children}
-    </WalletContext.Provider>
-  );
+  return {
+    identity,
+    backendActor,
+    adminBackendActor,
+    isAuthenticated,
+    favouritesUpdated,
+    setFavouritesUpdated,
+    ws,
+    wsMessage,
+    nfidlogin,
+    login,
+    logout,
+  };
+
 };
 
-export default ContextWrapper;
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+export const AuthProvider: FC<LayoutProps> = ({ children }) => {
+  const auth = useAuthClient();
+
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
+};
+
+export const useAuth = () => {
+  return useContext(AuthContext);
+};

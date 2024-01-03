@@ -13,7 +13,7 @@ import SubscriptionModal from "../SubscriptionModal";
 import { ThreeCircles } from "react-loader-spinner";
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
-import { deleteAsset, uploadFile } from "../../utils/storage-config/functions";
+import { deleteAsset, uploadFile } from "../../storage-config/functions";
 import { useAuth } from "../../hooks/ContextWrapper";
 import { Customer } from "../../declarations/marketplace_backend/marketplace_backend.did";
 

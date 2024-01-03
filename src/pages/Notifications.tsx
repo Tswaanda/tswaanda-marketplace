@@ -1,25 +1,52 @@
+import { useEffect, useState } from "react";
+import { useAuth } from "../hooks/ContextWrapper";
+import { UserNotification } from "../declarations/tswaanda_backend/tswaanda_backend.did";
+import { get } from "http";
+
 const announcements = [
   {
     id: 1,
-    title: 'New produce available',
+    title: "New produce available",
     preview:
-      'New high-quality produce available! Discover fresh, locally sourced fruits and vegetables on the Tswaanda marketplace.',
+      "New high-quality produce available! Discover fresh, locally sourced fruits and vegetables on the Tswaanda marketplace.",
   },
   {
     id: 2,
-    title: 'Coffee recently listed',
+    title: "Coffee recently listed",
     preview:
-      'Your favorite farmer just listed a batch of premium-grade coffee beans. Place your order before they run out',
+      "Your favorite farmer just listed a batch of premium-grade coffee beans. Place your order before they run out",
   },
   {
     id: 3,
-    title: 'Updated delivery',
+    title: "Updated delivery",
     preview:
-      'New delivery options available! Choose your preferred shipping method and enjoy hassle-free sourcing.',
+      "New delivery options available! Choose your preferred shipping method and enjoy hassle-free sourcing.",
   },
-]
+];
 
 export default function Notifications() {
+  const {adminBackendActor, wsMessage } = useAuth();
+  const [notifications, setNotifications] = useState<UserNotification | null>(null);
+
+  useEffect(() => {
+    if (wsMessage) {
+      getNotifications();
+    }
+  }, [wsMessage]);
+
+  useEffect(() => {
+    if (adminBackendActor) {
+      getNotifications();
+    }
+  }, [adminBackendActor]);
+
+
+  const getNotifications = async () => {
+    const res = await adminBackendActor.getUserNotifications();
+    console.log("Notifications", res);
+    setNotifications(res);
+  };
+
   return (
     <div>
       <div className="mt-6 flow-root">
@@ -34,7 +61,9 @@ export default function Notifications() {
                     {announcement.title}
                   </a>
                 </h3>
-                <p className="mt-1 text-sm text-gray-600 line-clamp-2">{announcement.preview}</p>
+                <p className="mt-1 text-sm text-gray-600 line-clamp-2">
+                  {announcement.preview}
+                </p>
               </div>
             </li>
           ))}
@@ -49,5 +78,5 @@ export default function Notifications() {
         </a>
       </div>
     </div>
-  )
+  );
 }

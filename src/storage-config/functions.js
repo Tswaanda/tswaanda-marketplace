@@ -2,14 +2,16 @@ import { Ed25519KeyIdentity } from "@dfinity/identity";
 import { getActor } from "./actor";
 import { updateChecksum } from "./utils";
 
-import { idlFactory as fileStorageIdlFactory } from "../../declarations/file_storage/index";
-import { idlFactory as fileScalingManagerIdlFactory } from "../../declarations/file_scaling_manager/index";
-// import { canisterId as scalingCanId } from "../../declarations/file_scaling_manager/index";
-// import { canisterId as storageCanid } from "../../declarations/file_storage/index";
+import { idlFactory as fileStorageIdlFactory } from "../declarations/file_storage/index";
+import { idlFactory as fileScalingManagerIdlFactory } from "../declarations/file_scaling_manager/index";
 
 const scalingCanId = "7t3jl-kyaaa-aaaal-qcamq-cai";
 const storageCanId = "72ycx-4qaaa-aaaal-qcana-cai";
 
+const localScalingCanId = "bkyz2-fmaaa-aaaaa-qaaaq-cai"
+const localStorageCanId = "be2us-64aaa-aaaaa-qaabq-cai"
+
+const env = process.env.DFX_NETWORK || "local";
 
 let motoko_identity = Ed25519KeyIdentity.generate();
 let fileScalingManagerActor;
@@ -21,7 +23,7 @@ let actorsInitialized = false;
 export async function initActors() {
   if (!actorsInitialized) {
     fileScalingManagerActor = await getActor(
-      scalingCanId,
+      env === "local" ? localScalingCanId : scalingCanId,
       fileScalingManagerIdlFactory,
       motoko_identity
     );
@@ -29,7 +31,7 @@ export async function initActors() {
     fileScalingManagerActor.init();
 
     fileStorageActor = await getActor(
-      storageCanId,
+      env === "local" ? localStorageCanId : storageCanId,
       fileStorageIdlFactory,
       motoko_identity
     );
@@ -42,7 +44,6 @@ export async function initActors() {
 //Return the version of the storage canister
 export async function getVersion() {
   const response = await fileStorageActor.version();
-  console.log("Response here", response);
   return response;
 }
 
