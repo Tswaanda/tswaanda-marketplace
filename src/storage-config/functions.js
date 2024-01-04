@@ -8,8 +8,8 @@ import { idlFactory as fileScalingManagerIdlFactory } from "../declarations/file
 const scalingCanId = "7t3jl-kyaaa-aaaal-qcamq-cai";
 const storageCanId = "72ycx-4qaaa-aaaal-qcana-cai";
 
-const localScalingCanId = "bkyz2-fmaaa-aaaaa-qaaaq-cai"
-const localStorageCanId = "be2us-64aaa-aaaaa-qaabq-cai"
+const localScalingCanId = "br5f7-7uaaa-aaaaa-qaaca-cai"
+const localStorageCanId = "avqkn-guaaa-aaaaa-qaaea-cai"
 
 const env = process.env.DFX_NETWORK || "local";
 

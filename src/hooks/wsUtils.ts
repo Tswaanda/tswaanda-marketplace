@@ -21,3 +21,19 @@ export const processWsMessage = (message: AppMessage) => {
     };
   }
 };
+
+const getStatus = (status: string) => {
+  if (status === "order_placed") {
+    let message: string = "A new order has been placed";
+    let res = {
+      message: message,
+    };
+    return res;
+  } else if (status === "kyc_created") {
+    let message: string = "A new KYC has been created";
+    let res = {
+      message: message,
+    };
+    return res;
+  }
+};

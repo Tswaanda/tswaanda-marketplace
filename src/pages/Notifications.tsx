@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/ContextWrapper";
 import { UserNotification } from "../declarations/tswaanda_backend/tswaanda_backend.did";
-import { get } from "http";
 
 const announcements = [
   {

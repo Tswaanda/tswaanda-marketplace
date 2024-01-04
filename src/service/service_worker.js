@@ -14,6 +14,4 @@ self.addEventListener('message', event => {
   self.addEventListener('notificationclick', event => {
     console.log('Service Worker: Notification clicked', event.notification);
     event.notification.close();
-    // Handle the notification click, like opening or focusing a window
-    // Add your logic here if needed
   });

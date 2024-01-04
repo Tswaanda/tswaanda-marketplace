@@ -35,7 +35,7 @@ import IcWebSocket from "ic-websocket-js";
 import icblast from "@infu/icblast";
 import { handleWebSocketMessage } from "../service/main.js";
 import { set } from "zod";
-import { processWsMessage } from "./utils";
+import { processWsMessage } from "./wsUtils";
 
 const network = process.env.DFX_NETWORK || "local";
 
@@ -43,11 +43,11 @@ const gatewayUrl = "wss://gateway.icws.io";
 const icUrl = "https://icp0.io";
 const localGatewayUrl = "ws://127.0.0.1:8080";
 const localICUrl = "http://127.0.0.1:4943";
-const localhost = "http://localhost:3000";
+const localhost = "http://localhost:3001";
 const host = "https://icp0.io";
 
 const adminCanisterId = "56r5t-tqaaa-aaaal-qb4gq-cai";
-const adminLocalCanisterId = "bw4dl-smaaa-aaaaa-qaacq-cai";
+const adminLocalCanisterId = "a3shf-5eaaa-aaaaa-qaafa-cai";
 
 const days = BigInt(1);
 const hours = BigInt(24);
