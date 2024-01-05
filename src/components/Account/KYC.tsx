@@ -1,4 +1,4 @@
-import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
+import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { Fragment, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Transition } from "@headlessui/react";
@@ -7,10 +7,9 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
 import { uploadFile } from "../../storage-config/functions";
-import { useDropzone } from "react-dropzone";
 import { countryListAllIsoData } from "../../constants";
 import Loader from "../Loader";
-import { ZodType, z } from "zod";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import PhoneInput from "react-phone-input-2";
@@ -22,6 +21,8 @@ import {
 } from "../../utils/emails/verify";
 import { useAuth } from "../../hooks/ContextWrapper";
 import { Customer } from "../../declarations/marketplace_backend/marketplace_backend.did";
+import { getStatus } from "../../hooks/wsUtils";
+import { AppMessage, MarketKYCUpdate, MarketMessage } from "../../declarations/tswaanda_backend/tswaanda_backend.did";
 
 type FormData = {
   username: string;
@@ -41,7 +42,7 @@ type FormData = {
 };
 
 export default function KYC() {
-  const { backendActor, identity } = useAuth();
+  const { backendActor, identity, ws } = useAuth();
 
   const [profilePhoto, setPP] = useState(null);
   const [kycID, setKYCID] = useState(null);
@@ -234,6 +235,7 @@ export default function KYC() {
           verificationUrl
         );
         if (res) {
+          sendKYCUpdateWSMessage();
           setShow(true);
         } else {
           setShow(false);
@@ -286,12 +288,25 @@ export default function KYC() {
     }
   }, [saving]);
 
-  // ------------------------------------FILE DRAGE AND DROP--------------------------------------------------------
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop: (acceptedFiles) => {
-      setPP(acceptedFiles);
-    },
-  });
+  const sendKYCUpdateWSMessage = async () => {
+    let message = getStatus("kyc_created");
+    if (identity) {
+      let kycmsg:MarketKYCUpdate = {
+        marketPlUserclientId: identity.getPrincipal().toString(),
+        message: message.message,
+        timestamp: BigInt(Date.now()),
+      };
+      let mktMessage: MarketMessage = {
+        KYCUpdate: kycmsg,
+      };
+      const msg: AppMessage = {
+        FromMarket: mktMessage,
+      };
+      ws.send(msg);
+    } else {
+      console.log("Identity not found");
+    }
+  };
 
   return (
     <>

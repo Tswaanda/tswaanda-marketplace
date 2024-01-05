@@ -22,7 +22,7 @@ export const processWsMessage = (message: AppMessage) => {
   }
 };
 
-const getStatus = (status: string) => {
+export const getStatus = (status: string) => {
   if (status === "order_placed") {
     let message: string = "A new order has been placed";
     let res = {

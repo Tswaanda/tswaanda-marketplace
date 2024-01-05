@@ -15,6 +15,8 @@ import { Loader } from "../components";
 import { useAuth } from "../hooks/ContextWrapper";
 import { sendOrderPlacedEmail } from "../utils/emails/orderPlacedUpdate";
 import { Customer } from "../declarations/marketplace_backend/marketplace_backend.did";
+import { getStatus } from "../hooks/wsUtils";
+import { AppMessage, MarketMessage, MarketOrderUpdate } from "../declarations/tswaanda_backend/tswaanda_backend.did";
 
 const navigation = {
   pages: [
@@ -41,218 +43,16 @@ function classNames(...classes) {
 }
 
 export default function ShoppingCart() {
-  const { backendActor, adminBackendActor, identity } = useAuth();
+  const { backendActor, adminBackendActor, identity, ws } = useAuth();
 
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [userInfo, setUserInfo] = useState<Customer | null>(null);
   const [isAnon, setIsAnon] = useState(false);
-  // const [cartRawProducts, setRawProducts] = useState(null);
-  // const [products, setProducts] = useState(null);
-  // const [cartItems, setCartItems] = useState(null);
   const [cartRawProduct, setRawProduct] = useState(null);
   const [product, setProduct] = useState(null);
   const [cartItem, setCartItem] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // --------------------------------------FOR MULTIPLE PRODUCTS----------------------------------------------------
-
-  // const getCartProducts = async () => {
-  //   const res = await backendActor.getMyCartItemsProducts(identity.getPrincipal());
-  //   setRawProducts(res);
-  // };
-
-  // Converting the images bytes to data to blobs
-  // useEffect(() => {
-  //   if (cartRawProducts) {
-  //     setProducts(cartRawProducts);
-  //   }
-  // }, [cartRawProducts]);
-
-  // useEffect(() => {
-  //   if (identity.getPrincipal()) {
-  //     getCartProducts();
-  //     getCartItems();
-  //     getUserDetails();
-  //   }
-  // }, [identity.getPrincipal()]);
-
-  // const handleRemove = async (id: String) => {
-  //   const item = cartItems.find((item) => item.id === id);
-
-  //   const updatedCartItems = cartItems.filter((item) => item.id !== id);
-  //   setCartItems(updatedCartItems);
-
-  //   const updatedProducts = products.filter((product) => product.id !== id);
-  //   setProducts(updatedProducts);
-
-  //   const itemToRemove = {
-  //     id: item.id,
-  //     dateCreated: item.dateCreated,
-  //     quantity: BigInt(item.quantity),
-  //   };
-  //   const res = backendActor.removeFromCart(identity.getPrincipal(), itemToRemove);
-  // };
-
-  // //----------------------------------Order summary calculations-------------------------------------------------------
-  // const handleQuantityChange = async (e, id: String) => {
-  //   const newQty = e.target.value;
-
-  //   const updatedCartItems = cartItems.map((item) => {
-  //     if (item.id === id) {
-  //       return {
-  //         ...item,
-  //         quantity: newQty,
-  //       };
-  //     }
-  //     return item;
-  //   });
-  //   setCartItems(updatedCartItems);
-  // };
-
-  // const [subtotal, setSubtotal] = useState(null);
-  // const [shippingEstimate, setShipEstimate] = useState(null);
-  // const [taxEstimate, setTax] = useState(null);
-  // const [orderTotal, setOrderTotal] = useState(null);
-  // const [calculating, setCalculating] = useState(false);
-  // const [creatingOrder, setCreatingOrder] = useState(false);
-
-  // const shippingPercentage = 0.05;
-  // const taxPercentage = 0.1;
-
-  // useEffect(() => {
-  //   if (products && cartItems) {
-  //     setCalculating(true);
-  //     let subtotal = 0;
-
-  //     cartItems.forEach((cartItem) => {
-  //       const product = products.find((product) => product.id === cartItem.id);
-  //       if (product) {
-  //         subtotal += Number(product.price) * Number(cartItem.quantity);
-  //       }
-  //     });
-  //     setSubtotal(subtotal);
-  //   }
-  // }, [products, cartItems]);
-
-  // useEffect(() => {
-  //   if (subtotal) {
-  //     const shipping = subtotal * shippingPercentage;
-  //     const tax = subtotal * taxPercentage;
-  //     const total = subtotal + shipping + tax;
-
-  //     setShipEstimate(shipping.toFixed(2));
-  //     setTax(tax.toFixed(2));
-  //     setOrderTotal(total.toFixed(2));
-  //     setCalculating(false);
-  //   }
-  // }, [subtotal]);
-
-  // function getCartItemQuantity(productId) {
-  //   const cartItem = cartItems?.find((item) => item.id === productId);
-  //   return cartItem ? Number(cartItem.quantity) : 0;
-  // }
-
-  // // ----------------------------------------Creating Order----------------------------------------------------------
-
-  // const iFrameRef = useRef(null);
-
-  // const createMyOrder = async () => {
-  //   setCreatingOrder(true);
-  //   if (isAnon) {
-  //     toast.warning(
-  //       "Please create a Tswaanda profile to proceed with your order",
-  //       {
-  //         autoClose: 10000,
-  //         position: "top-center",
-  //         hideProgressBar: true,
-  //       }
-  //     );
-
-  //     navigate("/account");
-  //     setCreatingOrder(false);
-  //   } else {
-  //     const date = new Date();
-  //     const timestamp = date.getTime();
-  //     const lastDigits = timestamp.toString().slice(-8);
-  //     const randomLetters = generateRandomLetters(3);
-
-  //     const orderProducts = cartItems?.map((cartItem) => {
-  //       const product = cartRawProducts?.find((p) => p.id === cartItem.id);
-  //       return {
-  //         id: cartItem.id,
-  //         name: product.name,
-  //         description: product.fullDescription,
-  //         image: product.images[0],
-  //       };
-  //     });
-
-  //     const convertedCartItems = cartItems?.map((cartItem) => {
-  //       return {
-  //         id: cartItem.id,
-  //         quantity: BigInt(cartItem.quantity),
-  //         dateCreated: cartItem.dateCreated,
-  //       };
-  //     });
-
-  //     const order = {
-  //       orderId: String(uuidv4()),
-  //       orderNumber: `TSWA-${lastDigits}${randomLetters}`,
-  //       orderProducts,
-  //       userEmail: userInfo.email,
-  //       orderOwner: identity.getPrincipal(),
-  //       subtotal: parseFloat(subtotal),
-  //       totalPrice: parseFloat(orderTotal),
-  //       shippingEstimate: parseFloat(shippingEstimate),
-  //       taxEstimate: parseFloat(taxEstimate),
-  //       status: "Pending Approval",
-  //       step: BigInt(0),
-  //       dateCreated: BigInt(timestamp),
-  //     };
-
-  //     // Sending order and user information to the checkout page
-
-  //     const orderWithStrings = {
-  //       ...order,
-  //       subtotal: order.subtotal.toString(),
-  //       totalPrice: order.totalPrice.toString(),
-  //       shippingEstimate: order.shippingEstimate.toString(),
-  //       taxEstimate: order.taxEstimate.toString(),
-  //       step: order.step.toString(),
-  //       dateCreated: order.dateCreated.toString(),
-  //     };
-
-  //     const authClient = await AuthClient.create();
-  //     const identity = authClient.getIdentity();
-  //     const body = {
-  //       order: orderWithStrings,
-  //       identity,
-  //     };
-  //     if (iFrameRef.current) {
-  //       sendMessageToChild(body);
-  //     } else {
-  //       console.log("There iframe is not set");
-  //     }
-
-  //     // const res = await backendActor.createOrder(order);
-  //     // const result = await backendActor.removeBatchCartItems(
-  //     //   identity.getPrincipal(),
-  //     //   convertedCartItems
-  //     // );
-  //   }
-  // };
-
-  // function generateRandomLetters(length) {
-  //   let result = "";
-  //   const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-  //   const charactersLength = characters.length;
-  //   for (let i = 0; i < length; i++) {
-  //     result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  //   }
-  //   return result;
-  // }
-
-  // Get the cart items only, not products
 
   interface Response {
     err?: any;
@@ -428,6 +228,7 @@ export default function ShoppingCart() {
           return;
         }
         await backendActor.createOrder(order);
+        sendOrderUpdateWSMessage(order.orderId);
         await backendActor.removeFromCart(identity.getPrincipal());
         toast.success(
           "Order successfully created. Head over to the orders page to track your order's progress.",
@@ -476,6 +277,27 @@ export default function ShoppingCart() {
       } catch (error) {
         console.log("Error when making updates", error);
       }
+    }
+  };
+
+  const sendOrderUpdateWSMessage = async (id: string) => {
+    let message = getStatus("order_placed");
+    if (identity) {
+      let kycmsg:MarketOrderUpdate = {
+        marketPlUserclientId: identity.getPrincipal().toString(),
+        orderId: id,
+        message: message.message,
+        timestamp: BigInt(Date.now()),
+      };
+      let mktMessage: MarketMessage = {
+        KYCUpdate: kycmsg,
+      };
+      const msg: AppMessage = {
+        FromMarket: mktMessage,
+      };
+      ws.send(msg);
+    } else {
+      console.log("Identity not found");
     }
   };
 

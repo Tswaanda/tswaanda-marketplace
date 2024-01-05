@@ -47,11 +47,7 @@ const localhost = "http://localhost:3001";
 const host = "https://icp0.io";
 
 const adminCanisterId = "56r5t-tqaaa-aaaal-qb4gq-cai";
-const adminLocalCanisterId = "a3shf-5eaaa-aaaaa-qaafa-cai";
-
-const days = BigInt(1);
-const hours = BigInt(24);
-const nanoseconds = BigInt(3600000000000);
+const adminLocalCanisterId = "bw4dl-smaaa-aaaaa-qaacq-cai";
 
 const authClient = await AuthClient.create({
   idleOptions: {
