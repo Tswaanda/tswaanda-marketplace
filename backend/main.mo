@@ -21,7 +21,6 @@ actor Tswaanda {
 
   var mapOfOrders = HashMap.HashMap<Text, ProductOrder>(0, Text.equal, Text.hash);
   var mapOfCustomers = HashMap.HashMap<Principal, Customer>(0, Principal.equal, Principal.hash);
-  // var customerCartItems = HashMap.HashMap<Principal, List.List<CartItem>>(0, Principal.equal, Principal.hash);
   var customerCartItems = HashMap.HashMap<Principal, CartItem>(0, Principal.equal, Principal.hash);
   var customerFavouriteItems = HashMap.HashMap<Principal, List.List<Text>>(0, Principal.equal, Principal.hash);
   var unverifiedEmailUsers = HashMap.HashMap<Text, EmailVerificationSchema>(0, Text.equal, Text.hash);
@@ -30,7 +29,6 @@ actor Tswaanda {
   private stable var ordersEntries : [(Text, ProductOrder)] = [];
   private stable var customersEntries : [(Principal, Customer)] = [];
   private stable var cartItemsEntries : [(Principal, CartItem)] = [];
-  // private stable var cartItemsEntries : [(Principal, List.List<CartItem>)] = [];
   private stable var favouriteItemsEntries : [(Principal, List.List<Text>)] = [];
 
   private stable var unverifiedEmailUsersEntries : [(Text, EmailVerificationSchema)] = [];
@@ -41,7 +39,6 @@ actor Tswaanda {
     ordersEntries := Iter.toArray(mapOfOrders.entries());
     customersEntries := Iter.toArray(mapOfCustomers.entries());
     cartItemsEntries := Iter.toArray(customerCartItems.entries());
-    // cartItemsEntries := Iter.toArray(customerCartItems.entries());
     favouriteItemsEntries := Iter.toArray(customerFavouriteItems.entries());
     unverifiedEmailUsersEntries := Iter.toArray(unverifiedEmailUsers.entries());
     newLetterSubscibers := Iter.toArray(newsLetterSubscriptions.entries());
@@ -51,7 +48,6 @@ actor Tswaanda {
     mapOfOrders := HashMap.fromIter<Text, ProductOrder>(ordersEntries.vals(), 0, Text.equal, Text.hash);
     mapOfCustomers := HashMap.fromIter<Principal, Customer>(customersEntries.vals(), 0, Principal.equal, Principal.hash);
     customerCartItems := HashMap.fromIter<Principal, CartItem>(cartItemsEntries.vals(), 0, Principal.equal, Principal.hash);
-    // customerCartItems := HashMap.fromIter<Principal, List.List<CartItem>>(cartItemsEntries.vals(), 0, Principal.equal, Principal.hash);
     customerFavouriteItems := HashMap.fromIter<Principal, List.List<Text>>(favouriteItemsEntries.vals(), 0, Principal.equal, Principal.hash);
     unverifiedEmailUsers := HashMap.fromIter<Text, EmailVerificationSchema>(unverifiedEmailUsersEntries.vals(), 0, Text.equal, Text.hash);
     newsLetterSubscriptions := HashMap.fromIter<Text, NewsLetterSubscription>(newLetterSubscibers.vals(), 0, Text.equal, Text.hash);
@@ -248,95 +244,6 @@ actor Tswaanda {
     customerCartItems.delete(userId);
     return true;
   };
-
-  // --------------------------------------MULTIPLE CART ITEMS METHODS----------------------------------------------------
-
-  // public shared func addToCart(userId : Principal, cartItem : CartItem) : async Bool {
-  //   var cartItems : List.List<CartItem> = switch (customerCartItems.get(userId)) {
-  //     case (?value) { value };
-  //     case (null) { List.nil<CartItem>() };
-  //   };
-  //   cartItems := List.push(cartItem, cartItems);
-  //   customerCartItems.put(userId, cartItems);
-  //   return true;
-  // };
-
-  // public shared func getMyCartItemsProducts(userId : Principal) : async [Product] {
-
-  //   var cartItems : List.List<CartItem> = switch (customerCartItems.get(userId)) {
-  //     case (?value) { value };
-  //     case (null) { List.nil<CartItem>() };
-  //   };
-  //   var itemsIds : List.List<Text> = List.nil<Text>();
-  //   let items = List.toArray(cartItems);
-  //   for (item in items.vals()) {
-  //     itemsIds := List.push(item.id, itemsIds);
-  //   };
-  //   let products = await adminInterface.filterProducts(List.toArray(itemsIds));
-  //   return products;
-  // };
-
-  // public shared func getMyCartItems(userId : Principal) : async [CartItem] {
-
-  //   var favItems : List.List<CartItem> = switch (customerCartItems.get(userId)) {
-  //     case (?value) { value };
-  //     case (null) { List.nil<CartItem>() };
-  //   };
-  //   let items = List.toArray(favItems);
-  //   return items;
-  // };
-
-  // public shared func removeFromCart(userId : Principal, cartItem : CartItem) : async Bool {
-  //   var cartItems : List.List<CartItem> = switch (customerCartItems.get(userId)) {
-  //     case (?value) { value };
-  //     case (null) { List.nil<CartItem>() };
-  //   };
-  //   cartItems := List.filter(
-  //     cartItems,
-  //     func(item : CartItem) : Bool {
-  //       item != cartItem;
-  //     },
-  //   );
-  //   customerCartItems.put(userId, cartItems);
-  //   return true;
-  // };
-
-  // public shared func updateCartItem(userId : Principal, cartItem : CartItem) : async Bool {
-  //   var cartItems : List.List<CartItem> = switch (customerCartItems.get(userId)) {
-  //     case (?value) { value };
-  //     case (null) { List.nil<CartItem>() };
-  //   };
-  //   cartItems := List.filter(
-  //     cartItems,
-  //     func(item : CartItem) : Bool {
-  //       item.id != cartItem.id;
-  //     },
-  //   );
-  //   cartItems := List.push(cartItem, cartItems);
-  //   customerCartItems.put(userId, cartItems);
-  //   return true;
-  // };
-
-  // public shared func removeBatchCartItems(userid : Principal, cartItems : [CartItem]) : async Bool {
-  //   var userCartItems : List.List<CartItem> = switch (customerCartItems.get(userid)) {
-  //     case (?value) { value };
-  //     case (null) { List.nil<CartItem>() };
-  //   };
-
-  //   for (item in cartItems.vals()) {
-  //     userCartItems := List.filter(
-  //       userCartItems,
-  //       func(cartItem : CartItem) : Bool {
-  //         cartItem.id != item.id;
-  //       },
-  //     );
-  //   };
-
-  //   customerCartItems.put(userid, userCartItems);
-  //   return true;
-  // };
-
-  // -------------------------------------------Favourites items methods---------------------------------------------------
 
   public shared ({ caller }) func addToFavourites(productId : Text) : async Bool {
     var favouriteItems : List.List<Text> = switch (customerFavouriteItems.get(caller)) {

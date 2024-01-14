@@ -25,6 +25,23 @@ const navigation = {
   ],
 };
 
+// let product = {
+//   id: "SB-001",
+//   name: "Smart Basil",
+//   hscode: "1234.56.78",
+//   farmer: "TechGreens",
+//   price: 500,
+//   minOrder: 10,
+//   shortDescription: "AI-enhanced, blockchain-tracked basil plant",
+//   fullDescription: "Smart Basil is the first of its kind: an AI-enhanced, blockchain-tracked basil plant. Grown in a tech-optimized environment, it's designed for both cooking enthusiasts and tech geeks. Each leaf is monitored for optimal growth, and its blockchain integration allows you to track its journey from seed to your kitchen.",
+//   category: "Tech-Enhanced Edibles",
+//   images: ["smart_basil1.jpg", "smart_basil2.jpg"],
+//   weight: 200,
+//   ordersPlaced: 0,
+//   availability: "Pre-order",
+//   created: 20240112
+// };
+
 const relatedProducts = [
   {
     id: 1,
@@ -283,14 +300,14 @@ export default function ShoppingCart() {
   const sendOrderUpdateWSMessage = async (id: string) => {
     let message = getStatus("order_placed");
     if (identity) {
-      let kycmsg:MarketOrderUpdate = {
+      let ordermsg:MarketOrderUpdate = {
         marketPlUserclientId: identity.getPrincipal().toString(),
         orderId: id,
         message: message.message,
         timestamp: BigInt(Date.now()),
       };
       let mktMessage: MarketMessage = {
-        KYCUpdate: kycmsg,
+        OrderUpdate: ordermsg,
       };
       const msg: AppMessage = {
         FromMarket: mktMessage,

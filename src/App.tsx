@@ -11,25 +11,27 @@ import { setInit } from "./state/globalSlice";
 import { initActors } from "./storage-config/functions";
 
 // Pages
-const Home = lazy(() => import("./pages/Home"));
-const Account = lazy(() => import("./pages/Account"));
-const Company = lazy(() => import("./pages/Company"));
-const Market = lazy(() => import("./pages/Market"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const Product = lazy(() => import("./pages/Product"));
-const Services = lazy(() => import("./pages/Services"));
-const Support = lazy(() => import("./pages/Support"));
-const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
-const Documentation = lazy(() => import("./pages/Documentation"));
+const Home = lazy(() => import("./features/Home"));
+const Account = lazy(() => import("./features/Account"));
+const Company = lazy(() => import("./features/Company"));
+const Market = lazy(() => import("./features/Market"));
+const NotFound = lazy(() => import("./features/NotFound"));
+const Product = lazy(() => import("./features/Product"));
+const Services = lazy(() => import("./features/Services"));
+const Support = lazy(() => import("./features/Support"));
+const VerifyEmail = lazy(() => import("./features/VerifyEmail"));
+const Documentation = lazy(() => import("./features/Documentation"));
+const HSCodes = lazy(() => import("./components/Documentation/Article"));
+const VerifyNewsLetterEmail = lazy(
+  () => import("./features/VerifyNewsLetterEmail")
+);
+const ShoppingCart = lazy(() => import("./features/ShoppingCart"));
+const Orders = lazy(() => import("./features/Orders/Orders"));
+const Disputes = lazy(() => import("./components/Documentation/Disputes"));
+const FAQs = lazy(() => import("./components/FAQs"));
+const Notifications = lazy(() => import("./features/Notifications"));
+const OrderDetails = lazy(() => import("./features/Orders/OrderDetails"));
 import { useAuth } from "./hooks/ContextWrapper";
-import HSCodes from "./components/Documentation/Article";
-import Transactions from "./pages/Transactions";
-import VerifyNewsLetterEmail from "./pages/VerifyNewsLetterEmail";
-import ShoppingCart from "./pages/ShoppingCart";
-import Orders from "./pages/Orders";
-import Disputes from "./components/Documentation/Disputes";
-import FAQs from "./components/FAQs";
-import Notifications from "./pages/Notifications";
 
 export const loaderStyle: CSSProperties = {
   position: "absolute",
@@ -62,8 +64,6 @@ const App = () => {
 
   console.log("Your principal", identity?.getPrincipal().toString());
 
-
-
   return (
     <main className="font-mont" style={containerStyle}>
       <BrowserRouter>
@@ -79,197 +79,39 @@ const App = () => {
               <Navbar />
             </div>
           </div>
-          <Routes>
-            <Route index element={<Home />} />
-            <Route path="*" element={<NotFound />} />
-            <Route
-              path="account"
-              element={
-                <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                  <div className={`${styles.boxWidth}`}>
-                    <Account />
-                    {/* {showKycModal && <KYCModal show={showKycModal} onClose={() => setShowKycModal(false)} />} */}
-                  </div>
-                </div>
-              }
-            />
-            <Route
-              path="services"
-              element={
-                <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                  <div className={`${styles.boxWidth}`}>
-                    <Services />
-                  </div>
-                </div>
-              }
-            />
-            <Route
-              path="company"
-              element={
-                <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                  <div className={`${styles.boxWidth}`}>
-                    <Company />
-                  </div>
-                </div>
-              }
-            />
-            <Route
-              path="orders"
-              element={
-                <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                  <div className={`${styles.boxWidth}`}>
-                    <Orders />
-                  </div>
-                </div>
-              }
-            />
 
-            <Route
-              path="support"
-              element={
-                <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                  <div className={`${styles.boxWidth}`}>
-                    <Support />
-                  </div>
-                </div>
-              }
-            />
-
-            <Route
-              path="notifications"
-              element={
-                <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                  <div className={`${styles.boxWidth}`}>
-                    <Notifications/>
-                  </div>
-                </div>
-              }
-            />
-
-            <Route
-              path="shopping-cart"
-              element={
-                <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                  <div className={`${styles.boxWidth}`}>
-                    <ShoppingCart />
-                  </div>
-                </div>
-              }
-            />
-
-            <Route
-              path="orders"
-              element={
-                <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                  <div className={`${styles.boxWidth}`}>
-                    <Orders />
-                  </div>
-                </div>
-              }
-            />
-
-            <Route
-              path="shopping-cart"
-              element={
-                <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                  <div className={`${styles.boxWidth}`}>
-                    <ShoppingCart />
-                  </div>
-                </div>
-              }
-            />
-
-            <Route
-              path="market"
-              element={
-                <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                  <div className={`${styles.boxWidth}`}>
-                    <Market />
-                  </div>
-                </div>
-              }
-            />
-            <Route
-              path="product/:id"
-              element={
-                <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                  <div className={`${styles.boxWidth}`}>
-                    <Product />
-                  </div>
-                </div>
-              }
-            />
-            <Route
-              path="verify-email/:userid/:uniquestr"
-              element={
-                <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                  <div className={`${styles.boxWidth}`}>
-                    <VerifyEmail />
-                  </div>
-                </div>
-              }
-            />
-            <Route
-              path="verify-email/:id"
-              element={
-                <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                  <div className={`${styles.boxWidth}`}>
-                    <VerifyNewsLetterEmail />
-                  </div>
-                </div>
-              }
-            />
-            <Route
-              path="documentation"
-              element={
-                <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                  <div className={`${styles.boxWidth}`}>
-                    <Documentation />
-                  </div>
-                </div>
-              }
-            />
-            <Route
-              path="faqs"
-              element={
-                <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                  <div className={`${styles.boxWidth}`}>
-                    <FAQs />
-                  </div>
-                </div>
-              }
-            />
-            <Route
-              path="hscodes"
-              element={
-                <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                  <div className={`${styles.boxWidth}`}>
-                    <HSCodes />
-                  </div>
-                </div>
-              }
-            />
-            <Route
-              path="transactions"
-              element={
-                <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                  <div className={`${styles.boxWidth}`}>
-                    <Transactions />
-                  </div>
-                </div>
-              }
-            />
-            <Route
-              path="disputes"
-              element={
-                <div className={`${styles.paddingX} ${styles.flexStart}`}>
-                  <div className={`${styles.boxWidth}`}>
-                    <Disputes />
-                  </div>
-                </div>
-              }
-            />
-          </Routes>
+          <div className={`${styles.paddingX} ${styles.flexStart}`}>
+            <div className={`${styles.boxWidth}`}>
+              <Routes>
+                <Route index element={<Home />} />
+                <Route path="*" element={<NotFound />} />
+                <Route path="account" element={<Account />} />
+                <Route path="services" element={<Services />} />
+                <Route path="company" element={<Company />} />
+                <Route path="orders" element={<Orders />} />
+                <Route path="support" element={<Support />} />
+                <Route path="notifications" element={<Notifications />} />
+                <Route path="shopping-cart" element={<ShoppingCart />} />
+                <Route path="orders" element={<Orders />} />
+                <Route path="shopping-cart" element={<ShoppingCart />} />
+                <Route path="market" element={<Market />} />
+                <Route path="product/:id" element={<Product />} />
+                <Route path="order/:id" element={<OrderDetails />} />
+                <Route
+                  path="verify-email/:userid/:uniquestr"
+                  element={<VerifyEmail />}
+                />
+                <Route
+                  path="verify-email/:id"
+                  element={<VerifyNewsLetterEmail />}
+                />
+                <Route path="documentation" element={<Documentation />} />
+                <Route path="faqs" element={<FAQs />} />
+                <Route path="hscodes" element={<HSCodes />} />
+                <Route path="disputes" element={<Disputes />} />
+              </Routes>
+            </div>
+          </div>
 
           <div className={`${styles.paddingX} ${styles.flexCenter}`}>
             <div className={`${styles.boxWidth}`}>

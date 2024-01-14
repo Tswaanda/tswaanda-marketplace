@@ -43,7 +43,7 @@ const gatewayUrl = "wss://gateway.icws.io";
 const icUrl = "https://icp0.io";
 const localGatewayUrl = "ws://127.0.0.1:8080";
 const localICUrl = "http://127.0.0.1:4943";
-const localhost = "http://localhost:3001";
+const localhost = "http://localhost:3000";
 const host = "https://icp0.io";
 
 const adminCanisterId = "56r5t-tqaaa-aaaal-qb4gq-cai";

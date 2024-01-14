@@ -39,29 +39,57 @@ module {
         shippingEstimate : Float;
         taxEstimate : Float;
         status : Text;
-        // invoice: ?Text;
-        // acceptedOn: ?Int;
-        // shippedOn: ?Int;
-        // deliveredOn: ?Int;
         dateCreated : Int;
         step : Nat;
+        companyName : Text;
+        name : Text;
+        companyAddress : Text;
+        companyAddress2 : Text;
+        companyCountry : Text;
+        billTo : Text;
+        clientName : Text;
+        clientAddress : Text;
+        clientAddress2 : Text;
+        clientCountry : Text;
+        invoiceTitleLabel : Text;
+        invoiceTitle : Text;
+        invoiceDateLabel : Text;
+        invoiceDate : Text;
+        invoiceDueDateLabel : Text;
+        invoiceDueDate : Text;
+        exportDocs: [Text];
+        shipmentDocs: [Text];
+        exportDocsVerified: Bool;
+        shipmentDocsVerified: Bool;
+        invoiceStatus : {
+            #paid;
+            #unpaid;
+            #overdue;
+        };
+        orderStage : {
+            #orderplaced;
+            #purchased;
+            #shipped;
+            #delivered;
+            #cancelled;
+        };
+        productLineDescription : Text;
+        productLineQuantity : Text;
+        productLineQuantityRate : Text;
+        productLineQuantityAmount : Text;
+        productLines : {
+            description : Text;
+            quantity : Text;
+            rate : Text;
+        };
+        subTotalLabel : Text;
+        taxLabel : Text;
+        totalLabel : Text;
+        currency : Text;
+        notesLabel : Text;
+        notes : Text;
+        termLabel : Text;
     };
-
-    // -----------------------ORDER TYPES FOR MULTIPLE PRODUCTS PER ORDER-----------------------------------------
-    // public type Order = {
-    //     orderId : Text;
-    //     orderNumber: Text;
-    //     userEmail: Text;
-    //     orderProducts: [OrderProduct];
-    //     orderOwner: Principal;
-    //     subtotal: Float;
-    //     totalPrice: Float;
-    //     shippingEstimate: Float;
-    //     taxEstimate: Float;
-    //     status: Text;
-    //     step: Nat;
-    //     dateCreated: Int;
-    // };
 
     public type OrderProduct = {
         id : Text;
@@ -76,7 +104,7 @@ module {
     public type Customer = {
         id : Text;
         principal : Principal;
-        body: ?CustomerBody;
+        body : ?CustomerBody;
         created : Int;
     };
 

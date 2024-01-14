@@ -35,10 +35,10 @@ export const handleWebSocketMessage = async (message) => {
   }
   if (Notification.permission === 'granted') {
 
-    const title = message.title; 
+    const title = message.title;
     const options = {
-      body: message.message, 
-      icon: '../../assets/logo.png' 
+      body: message.message,
+      icon: '../../assets/logo.png'
     }
 
     // Sending a message to the service worker to show a notification
@@ -48,6 +48,9 @@ export const handleWebSocketMessage = async (message) => {
         title: title,
         options: options
       });
+
+      const audio = new Audio('../../assets/notification.mp3');
+      audio.play();
     } else {
       console.error('Service worker controller not available');
     }

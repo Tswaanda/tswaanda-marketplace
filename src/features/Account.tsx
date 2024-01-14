@@ -6,7 +6,6 @@ import {
   BellIcon,
   CogIcon,
   CreditCardIcon,
-  CurrencyDollarIcon,
   KeyIcon,
   SquaresPlusIcon,
   UserCircleIcon,
@@ -19,7 +18,7 @@ import Billing from "../components/Account/Billing";
 import Notifications from "./Notifications";
 import KYC from "../components/Account/KYC";
 
-import Transactions from "./Transactions";
+import Transactions from "./Orders/components/Transactions";
 import { Loader } from "../components";
 import { useSelector } from "react-redux";
 import { RootState } from "../state/store";
@@ -31,7 +30,6 @@ const subNavigation = [
   { name: "Notifications", icon: BellIcon },
   { name: "Plan & Billing", icon: CreditCardIcon },
   { name: "Integrations", icon: SquaresPlusIcon },
-  // { name: "Transactions", icon: CurrencyDollarIcon },
 ];
 
 function classNames(...classes) {

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Brocoli } from "../assets/assets";
-import { useAuth } from "../hooks/ContextWrapper";
-import { ProductOrder } from "../declarations/marketplace_backend/marketplace_backend.did";
+import { Brocoli } from "../../../assets/assets";
+import { useAuth } from "../../../hooks/ContextWrapper";
+import { ProductOrder } from "../../../declarations/marketplace_backend/marketplace_backend.did";
 
-export default function Transactions() {
+const Transactions = () => {
   const { backendActor } = useAuth();
   const [orders, setOrders] = useState<ProductOrder[] | null>(null);
 
@@ -139,3 +139,5 @@ export default function Transactions() {
     </div>
   );
 }
+
+export default Transactions;
