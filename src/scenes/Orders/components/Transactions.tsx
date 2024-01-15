@@ -16,6 +16,22 @@ const Transactions = () => {
     setOrders(orders);
   };
 
+  const handleOrderStage = (orderStage) => {
+    if (orderStage.delivered !== null) {
+      return "Order delivered";
+    } else if (orderStage.purchased !== null) {
+      return "Order purchased";
+    } else if (orderStage.shipped !== null) {
+      return "Order shipped";
+    } else if (orderStage.cancelled !== null) {
+      return "Order cancelled";
+    } else if (orderStage.orderplaced !== null) {
+      return "Order placed";
+    } else {
+      return "Order status unknown";
+    }
+  };
+
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-7xl py-16 px-4 sm:px-6 lg:px-8 lg:pb-24">
@@ -97,37 +113,39 @@ const Transactions = () => {
                   </thead>
                   <tbody className="divide-y divide-gray-200 border-b border-gray-200 text-sm sm:border-t">
                     {/* {order.orderProducts.map((product) => ( */}
-                      <tr >
-                        <td className="py-6 pr-8">
-                          <div className="flex items-center">
-                            <img
-                              src={order.orderProducts.image}
-                              className="mr-6 h-16 w-16 rounded object-cover object-center"
-                            />
-                            <div>
-                              <div className="font-medium text-gray-900">
-                                {order.orderProducts.name}
-                              </div>
-                              <div className="mt-1 sm:hidden">
-                               $ {order.orderProducts.price}
-                              </div>
+                    <tr>
+                      <td className="py-6 pr-8">
+                        <div className="flex items-center">
+                          <img
+                            src={order.orderProducts.image}
+                            className="mr-6 h-16 w-16 rounded object-cover object-center"
+                          />
+                          <div>
+                            <div className="font-medium text-gray-900">
+                              {order.orderProducts.name}
+                            </div>
+                            <div className="mt-1 sm:hidden">
+                              $ {order.orderProducts.price}
                             </div>
                           </div>
-                        </td>
-                        <td className="hidden py-6 pr-8 sm:table-cell">
-                         $ {order.orderProducts.price}
-                        </td>
-                        <td className="hidden py-6 pr-8 sm:table-cell">
-                          {order.status}
-                        </td>
-                        <td className="whitespace-nowrap py-6 text-right font-medium">
-                          <a href="#" className="text-primary">
-                            Download
-                            <span className="hidden lg:inline"> Receipt</span>
-                            <span className="sr-only">, {order.orderProducts.name}</span>
-                          </a>
-                        </td>
-                      </tr>
+                        </div>
+                      </td>
+                      <td className="hidden py-6 pr-8 sm:table-cell">
+                        $ {order.orderProducts.price}
+                      </td>
+                      <td className="hidden py-6 pr-8 sm:table-cell">
+                        {handleOrderStage(order.orderStage)}
+                      </td>
+                      <td className="whitespace-nowrap py-6 text-right font-medium">
+                        <a href="#" className="text-primary">
+                          Download
+                          <span className="hidden lg:inline"> Receipt</span>
+                          <span className="sr-only">
+                            , {order.orderProducts.name}
+                          </span>
+                        </a>
+                      </td>
+                    </tr>
                     {/* ))} */}
                   </tbody>
                 </table>
@@ -138,6 +156,6 @@ const Transactions = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Transactions;

@@ -26,6 +26,7 @@ import {
   EmailShareButton, 
   EmailIcon
 } from 'react-share';
+import { CartItem } from "../declarations/marketplace_backend/marketplace_backend.did";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -132,12 +133,12 @@ export default function Product() {
         setAddingToCart(true);
         const date = new Date();
         const timestamp = date.getTime();
-        const cartItem = {
+        const cartItem: CartItem = {
           id: id,
-          quantity: 1,
-          dateCreated: timestamp,
+          quantity: BigInt(1),
+          dateCreated: BigInt(timestamp),
         };
-        const res = await backendActor.addToCart(
+        await backendActor.addToCart(
           identity?.getPrincipal(),
           cartItem
         );

@@ -169,7 +169,7 @@ const Profile = ({ activate }) => {
       await deleteAsset(userInfo.body[0].proofOfAddressCopy);
       const addressUrl = await uploadAsset(proofOfAddress);
       console.log("address file saved", addressUrl);
-      const updatedObject = {
+      const updatedObject: Customer = {
         ...userInfo,
         body: [
           {

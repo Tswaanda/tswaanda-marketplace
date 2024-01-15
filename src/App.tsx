@@ -11,26 +11,26 @@ import { setInit } from "./state/globalSlice";
 import { initActors } from "./storage-config/functions";
 
 // Pages
-const Home = lazy(() => import("./features/Home"));
-const Account = lazy(() => import("./features/Account"));
-const Company = lazy(() => import("./features/Company"));
-const Market = lazy(() => import("./features/Market"));
-const NotFound = lazy(() => import("./features/NotFound"));
-const Product = lazy(() => import("./features/Product"));
-const Services = lazy(() => import("./features/Services"));
-const Support = lazy(() => import("./features/Support"));
-const VerifyEmail = lazy(() => import("./features/VerifyEmail"));
-const Documentation = lazy(() => import("./features/Documentation"));
+const Home = lazy(() => import("./scenes/Home"));
+const Account = lazy(() => import("./scenes/Account"));
+const Company = lazy(() => import("./scenes/Company"));
+const Market = lazy(() => import("./scenes/Market"));
+const NotFound = lazy(() => import("./scenes/NotFound"));
+const Product = lazy(() => import("./scenes/Product"));
+const Services = lazy(() => import("./scenes/Services"));
+const Support = lazy(() => import("./scenes/Support"));
+const VerifyEmail = lazy(() => import("./scenes/VerifyEmail"));
+const Documentation = lazy(() => import("./scenes/Documentation"));
 const HSCodes = lazy(() => import("./components/Documentation/Article"));
 const VerifyNewsLetterEmail = lazy(
-  () => import("./features/VerifyNewsLetterEmail")
+  () => import("./scenes/VerifyNewsLetterEmail")
 );
-const ShoppingCart = lazy(() => import("./features/ShoppingCart"));
-const Orders = lazy(() => import("./features/Orders/Orders"));
+const ShoppingCart = lazy(() => import("./scenes/ShoppingCart"));
+const Orders = lazy(() => import("./scenes/Orders/Orders"));
 const Disputes = lazy(() => import("./components/Documentation/Disputes"));
 const FAQs = lazy(() => import("./components/FAQs"));
-const Notifications = lazy(() => import("./features/Notifications"));
-const OrderDetails = lazy(() => import("./features/Orders/OrderDetails"));
+const Notifications = lazy(() => import("./scenes/Notifications"));
+const OrderDetails = lazy(() => import("./scenes/Orders/OrderDetails"));
 import { useAuth } from "./hooks/ContextWrapper";
 
 export const loaderStyle: CSSProperties = {

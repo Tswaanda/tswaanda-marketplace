@@ -27,7 +27,7 @@ import {
   AuthClientLoginOptions,
 } from "@dfinity/auth-client";
 import {
-  _SERVICE,
+  _SERVICE as ADMINSERVICE,
   AppMessage,
 } from "../declarations/tswaanda_backend/tswaanda_backend.did";
 import IcWebSocket from "ic-websocket-js";
@@ -36,6 +36,7 @@ import icblast from "@infu/icblast";
 import { handleWebSocketMessage } from "../service/main.js";
 import { set } from "zod";
 import { processWsMessage } from "./wsUtils";
+import { _SERVICE as MKTSERVICE } from "../declarations/marketplace_backend/marketplace_backend.did";
 
 const network = process.env.DFX_NETWORK || "local";
 
@@ -63,8 +64,8 @@ interface LayoutProps {
 
 type Context = {
   identity: any;
-  backendActor: any;
-  adminBackendActor: any;
+  backendActor: ActorSubclass<MKTSERVICE> | null
+  adminBackendActor: ActorSubclass<ADMINSERVICE> | null;
   isAuthenticated: boolean;
   favouritesUpdated: boolean;
   ws: any;
@@ -122,10 +123,10 @@ export const useAuthClient = (options = defaultOptions) => {
   const [identity, setIdentity] = useState<Identity | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [favouritesUpdated, setFavouritesUpdated] = useState(false);
-  const [backendActor, setBackendActor] = useState<ActorSubclass | null>(null);
-  const [ws, setWs] = useState<IcWebSocket<_SERVICE, AppMessage> | null>(null);
+  const [backendActor, setBackendActor] = useState<ActorSubclass<MKTSERVICE> | null>(null);
+  const [ws, setWs] = useState<IcWebSocket<ADMINSERVICE, AppMessage> | null>(null);
   const [adminBackendActor, setAdminBackendActor] =
-    useState<ActorSubclass | null>(null);
+    useState<ActorSubclass<ADMINSERVICE> | null>(null);
   const [wsMessage, setWsMessage] = useState<AppMessage| null>(null);
 
   useEffect(() => {
@@ -217,20 +218,18 @@ export const useAuthClient = (options = defaultOptions) => {
       agent.fetchRootKey();
     }
 
-    const _backendActor = Actor.createActor(marketIdlFactory, {
+    const _backendActor: ActorSubclass<MKTSERVICE> = Actor.createActor(marketIdlFactory, {
       agent,
       canisterId: marketCanId,
     });
     setBackendActor(_backendActor);
 
-    let ic = icblast({
-      local: network === "local" ? true : false,
-      identity: _identity,
-    });
 
-    let _adminActor = await ic(
-      network === "local" ? adminLocalCanisterId : adminCanisterId
-    );
+    let _adminActor : ActorSubclass<ADMINSERVICE>  = Actor.createActor(adminIdlFactory, {
+      canisterId: network === "local" ? adminLocalCanisterId : adminCanisterId,
+      agent: agent,
+    });
+    
     setAdminBackendActor(_adminActor);
 
     const _ws = new IcWebSocket(

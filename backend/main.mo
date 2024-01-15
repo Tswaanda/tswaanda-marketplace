@@ -100,27 +100,32 @@ actor Tswaanda {
 
   public shared query func getPendingOrders() : async [ProductOrder] {
     let ordersArray = Iter.toArray(mapOfOrders.vals());
-    let pending = Array.filter<ProductOrder>(ordersArray, func order = order.status == "pending");
+    let pending = Array.filter<ProductOrder>(ordersArray, func order = order.orderStage == #orderplaced);
     return pending;
   };
-  public shared query func getApprovedOrders() : async [ProductOrder] {
+  public shared query func getPurchasedOrders() : async [ProductOrder] {
     let ordersArray = Iter.toArray(mapOfOrders.vals());
-    let pending = Array.filter<ProductOrder>(ordersArray, func order = order.status == "approved");
+    let pending = Array.filter<ProductOrder>(ordersArray, func order = order.orderStage == #purchased);
     return pending;
   };
   public shared query func getShippedOrders() : async [ProductOrder] {
     let ordersArray = Iter.toArray(mapOfOrders.vals());
-    let pending = Array.filter<ProductOrder>(ordersArray, func order = order.status == "shipped");
+    let pending = Array.filter<ProductOrder>(ordersArray, func order = order.orderStage == #shipped);
     return pending;
   };
   public shared query func getDeliveredOrders() : async [ProductOrder] {
     let ordersArray = Iter.toArray(mapOfOrders.vals());
-    let pending = Array.filter<ProductOrder>(ordersArray, func order = order.status == "delivered");
+    let pending = Array.filter<ProductOrder>(ordersArray, func order = order.orderStage ==  #delivered);
+    return pending;
+  };
+  public shared query func getCancelledOrders() : async [ProductOrder] {
+    let ordersArray = Iter.toArray(mapOfOrders.vals());
+    let pending = Array.filter<ProductOrder>(ordersArray, func order = order.orderStage == #cancelled);
     return pending;
   };
   public shared query func getPendingOrdersSize() : async Nat {
     let ordersArray = Iter.toArray(mapOfOrders.vals());
-    let pending = Array.filter<ProductOrder>(ordersArray, func order = order.status == "pending");
+    let pending = Array.filter<ProductOrder>(ordersArray, func order = order.orderStage == #orderplaced);
     let size = Array.size(pending);
     return size;
   };
@@ -135,6 +140,13 @@ actor Tswaanda {
         ignore mapOfOrders.replace(id, updateOrder);
         return true;
       };
+    };
+  };
+
+  public shared query func getOrder(id : Text) : async Result.Result<ProductOrder, Text> {
+    switch (mapOfOrders.get(id)) {
+      case (null) { return #err("Order with the provided id not found") };
+      case (?result) { return #ok(result) };
     };
   };
 

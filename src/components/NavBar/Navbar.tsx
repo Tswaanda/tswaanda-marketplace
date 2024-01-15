@@ -19,6 +19,7 @@ import { useAuth } from "../../hooks/ContextWrapper";
 import KYCModal from "../KYCModal";
 import { Logo } from "../../assets";
 import { CustomerType } from "./types";
+import { CartItem } from "../../declarations/marketplace_backend/marketplace_backend.did";
 
 const user = {
   imageUrl: "./avatar.webp",
@@ -57,7 +58,7 @@ const Navbar = () => {
 
   const [userInfo, setUserInfo] = useState<CustomerType | null>(null);
 
-  const [cartItems, setCartItems] = useState<any[] | null>(null);
+  const [cartItems, setCartItems] = useState<CartItem | null>(null);
 
   const [favoriteItems, setFavoriteItems] = useState();
 
@@ -90,7 +91,9 @@ const Navbar = () => {
 
   const getCartsNum = async () => {
     const res = await backendActor.getMyCartItem(identity?.getPrincipal());
-    setCartItems(res);
+    if ("ok" in res) {
+      setCartItems(res.ok);
+    }
   };
 
   useEffect(() => {
@@ -293,11 +296,11 @@ const Navbar = () => {
                             aria-hidden="true"
                           />
 
-                          {cartItems.length > 0 && (
+                          
                             <span className="absolute -top-3 -right-3 bg-primary text-white rounded-full px-2 py-1 text-xs">
-                              {cartItems.length}
+                              1
                             </span>
-                          )}
+                          
                         </div>
                       </Link>
                     )}

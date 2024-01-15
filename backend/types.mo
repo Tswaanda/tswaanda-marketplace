@@ -38,9 +38,7 @@ module {
         totalPrice : Float;
         shippingEstimate : Float;
         taxEstimate : Float;
-        status : Text;
-        dateCreated : Int;
-        step : Nat;
+        created : Int;
         companyName : Text;
         name : Text;
         companyAddress : Text;

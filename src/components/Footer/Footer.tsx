@@ -153,11 +153,11 @@ const {backendActor} = useAuth()
     } else {
       // Subscribing and sending email is verified
       try {
-        const requestObj = {
+        const requestObj: NewsLetterSubscription = {
           id: String(uuidv4()),
           email: data.email,
           isVerified: false,
-          created: Date.now(),
+          created: BigInt(Date.now()),
         };
 
         await backendActor.addToNewsLetterSubscibers(requestObj);

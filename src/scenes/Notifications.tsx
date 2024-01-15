@@ -25,7 +25,7 @@ const announcements = [
 
 export default function Notifications() {
   const {adminBackendActor, wsMessage } = useAuth();
-  const [notifications, setNotifications] = useState<UserNotification | null>(null);
+  const [notifications, setNotifications] = useState<UserNotification[] | null>(null);
 
   useEffect(() => {
     if (wsMessage) {
@@ -42,7 +42,6 @@ export default function Notifications() {
 
   const getNotifications = async () => {
     const res = await adminBackendActor.getUserNotifications();
-    console.log("Notifications", res);
     setNotifications(res);
   };
 

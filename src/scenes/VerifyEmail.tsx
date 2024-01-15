@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Loader } from "../components";
 import { loaderStyle } from "../App";
-import { KYCRequest, Result } from "../utils/types";
+import { Result } from "../utils/types";
 import { toast } from "react-toastify";
 import { useAuth } from "../hooks/ContextWrapper";
+import { Customer } from "../declarations/marketplace_backend/marketplace_backend.did";
 
 const VerifyEmail = () => {
   const {backendActor } = useAuth();
@@ -48,9 +49,9 @@ const VerifyEmail = () => {
         record.userPrincipal
       );
       if (userKYCRecord.ok) {
-        let userEntry: KYCRequest = userKYCRecord.ok;
-        userEntry.isEmailVerified = true;
-        await backendActor.updateKYCRequest(userEntry.userId, userEntry);
+        let userEntry: Customer = userKYCRecord.ok;
+        userEntry.body[0].isEmailVerified = true;
+        await backendActor.updateKYCRequest(userEntry);
         await backendActor.removeFromUnverified(userid);
         setVerifying(false);
         toast.success("Success! You email have been verified", {

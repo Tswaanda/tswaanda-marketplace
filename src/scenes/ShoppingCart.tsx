@@ -14,7 +14,7 @@ import { toast } from "react-toastify";
 import { Loader } from "../components";
 import { useAuth } from "../hooks/ContextWrapper";
 import { sendOrderPlacedEmail } from "../utils/emails/orderPlacedUpdate";
-import { Customer } from "../declarations/marketplace_backend/marketplace_backend.did";
+import { Customer, ProductOrder } from "../declarations/marketplace_backend/marketplace_backend.did";
 import { getStatus } from "../hooks/wsUtils";
 import { AppMessage, MarketMessage, MarketOrderUpdate } from "../declarations/tswaanda_backend/tswaanda_backend.did";
 
@@ -213,14 +213,7 @@ export default function ShoppingCart() {
           image: product.images[0],
           quantity: BigInt(cartItem.quantity),
         };
-
-        const convertedCartItem = {
-          id: cartItem.id,
-          quantity: BigInt(cartItem.quantity),
-          dateCreated: cartItem.dateCreated,
-        };
-
-        const order = {
+        const order: ProductOrder = {
           orderId: String(uuidv4()),
           orderNumber: `TSWA-${lastDigits}${randomLetters}`,
           orderProducts: orderProduct,
@@ -230,9 +223,45 @@ export default function ShoppingCart() {
           totalPrice: parseFloat(orderTotal),
           shippingEstimate: parseFloat(shippingEstimate),
           taxEstimate: parseFloat(taxEstimate),
-          status: "pending",
-          step: BigInt(0),
-          dateCreated: BigInt(timestamp),
+          invoiceTitle: "Invoice",
+          productLineQuantityAmount: String(product.price),
+          exportDocsVerified: false,
+          shipmentDocsVerified: false,
+          subTotalLabel: "Subtotal",
+          invoiceDueDate: "Due on receipt",
+          clientName: userInfo?.body[0].firstName,
+          termLabel: "Terms",
+          name: product.name,
+          companyAddress2: "P.O. Box 12345",
+          invoiceDateLabel: "Invoice date",
+          exportDocs: [],
+          companyCountry: "Zimbabwe",
+          clientAddress2: "123 Main St.",
+          notesLabel: "Notes",
+          clientAddress: "New York, NY, 10001",
+          totalLabel: "Total",
+          invoiceDate: "2021-08-25",
+          productLines: {
+            rate: String(product.price),
+            description: product.fullDescription,
+            quantity: String(cartItem.quantity),
+          },
+          currency: "USD",
+          notes: "Thank you for your business.",
+          productLineQuantityRate: String(product.price),
+          companyName: "Tswaanda",
+          taxLabel: "Tax",
+          productLineQuantity: String(cartItem.quantity),
+          invoiceTitleLabel: "Invoice",
+          orderStage:{ orderplaced: null },
+          shipmentDocs: [],
+          invoiceDueDateLabel: "Due date",
+          companyAddress: "123 Fake St.",
+          clientCountry: "United States",
+          invoiceStatus: { unpaid: null },
+          billTo: "Bill to",
+          productLineDescription: product.fullDescription,
+          created: BigInt(timestamp)
         };
         const res = await makeUpdates(product);
         if (!res) {
@@ -256,7 +285,7 @@ export default function ShoppingCart() {
           }
         );
         setCreatingOrder(false);
-        window.location.reload();
+        navigate(`/order/${order.orderId}`);
       }
     } catch (error) {
       console.log("Error when placing order", error);
