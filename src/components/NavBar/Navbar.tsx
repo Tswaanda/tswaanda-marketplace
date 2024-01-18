@@ -13,8 +13,11 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { useDispatch } from "react-redux";
 import { setIsRegistered } from "../../state/globalSlice";
+
 import Favorites from "./Favorites";
 import LoginModal from "./LoginModal";
+import Notifications from './Notifications';
+
 import { useAuth } from "../../hooks/ContextWrapper";
 import KYCModal from "../KYCModal";
 import { Logo } from "../../assets";
@@ -62,6 +65,16 @@ const Navbar = () => {
 
   const [favoriteItems, setFavoriteItems] = useState();
 
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  const handleCloseNotification = () => {
+    setShowNotifications(false);
+  };
+
+  const handleNotificationClick = () => {
+    setShowNotifications(!showNotifications);
+  };
+
   const location = useLocation();
 
   const commonClassName =
@@ -104,7 +117,7 @@ const Navbar = () => {
   }, [identity]);
 
   return (
-    <nav className="bg-white pb-4">
+    <nav className="bg-white pb-4 relative">
       <>
         {showKycModal && (
           <KYCModal
@@ -173,7 +186,7 @@ const Navbar = () => {
                 <div className="flex h-9 items-center justify-between">
                   <div className="flex">
                     <a href="#" className="-m-1.5 p-1.5">
-                      <span className="sr-only">Your Company</span>
+                      <span className="sr-only">Tswaanda</span>
                       <img className="h-8" src={Logo} alt="logo" />
                     </a>
                   </div>
@@ -305,12 +318,14 @@ const Navbar = () => {
                       </Link>
                     )}
                     <Link
-                      to={"/notifications"}
+                      to={""}
                       className="flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 "
+                      onClick={handleNotificationClick}
                     >
                       <span className="sr-only">View notifications</span>
                       <BellIcon className="h-6 w-6" aria-hidden="true" />
                     </Link>
+                    {showNotifications && <Notifications handleCloseNotification={handleCloseNotification} />}
 
                     {/* Profile dropdown */}
                     <Menu as="div" className="relative ml-4 flex-shrink-0">
