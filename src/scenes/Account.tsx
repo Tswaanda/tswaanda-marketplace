@@ -26,6 +26,7 @@ import { RootState } from "../state/store";
 const subNavigation = [
   { name: "Profile", icon: UserCircleIcon },
   { name: "Account", icon: CogIcon },
+  { name: "Orders", icon: CogIcon},
   { name: "Security", icon: KeyIcon },
   { name: "Notifications", icon: BellIcon },
   { name: "Plan & Billing", icon: CreditCardIcon },
