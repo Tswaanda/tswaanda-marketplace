@@ -15,7 +15,7 @@ function classNames(...classes) {
 const subNavigation = [
   { name: "Orders", icon: TbShoppingCartCheck },
   { name: "Invoices", icon: FaFileInvoice },
-  { name: "Pendind Payments", icon: MdOutlinePendingActions },
+  { name: "Pending Payments", icon: MdOutlinePendingActions },
   { name: "Transactions History", icon: GrTransaction },
 ];
 
@@ -119,7 +119,7 @@ const Orders = () => {
           )}
 
           {/* Pending Payments */}
-          {activeInfo === "Pendind Payments" && (
+          {activeInfo === "Pending Payments" && (
             <div className="space-y-6 sm:px-6 lg:col-span-9 lg:px-0">
               <h3 className="flex justify-center items-center">Coming Soon</h3>
             </div>
