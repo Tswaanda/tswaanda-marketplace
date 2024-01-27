@@ -31,10 +31,7 @@ import {
   AppMessage,
 } from "../declarations/tswaanda_backend/tswaanda_backend.did";
 import IcWebSocket from "ic-websocket-js";
-// @ts-ignore
-import icblast from "@infu/icblast";
 import { handleWebSocketMessage } from "../service/main.js";
-import { set } from "zod";
 import { processWsMessage } from "./wsUtils";
 import { _SERVICE as MKTSERVICE } from "../declarations/marketplace_backend/marketplace_backend.did";
 
@@ -71,6 +68,8 @@ type Context = {
   ws: any;
   wsMessage: AppMessage | null;
   setFavouritesUpdated: (_value: boolean) => void;
+  setUpdateNotifications : (_value: boolean) => void;
+  updateNotications: boolean;
   login: () => void;
   nfidlogin: () => void;
   logout: () => void;
@@ -82,6 +81,10 @@ const initialContext: Context = {
   adminBackendActor: null,
   isAuthenticated: false,
   favouritesUpdated: false,
+  updateNotications: false,
+  setUpdateNotifications: (boolean): void => {
+    throw new Error("setContext function must be overridden");
+  },
   ws: null,
   wsMessage: null,
   setFavouritesUpdated: (boolean): void => {
@@ -128,6 +131,7 @@ export const useAuthClient = (options = defaultOptions) => {
   const [adminBackendActor, setAdminBackendActor] =
     useState<ActorSubclass<ADMINSERVICE> | null>(null);
   const [wsMessage, setWsMessage] = useState<AppMessage| null>(null);
+  const [updateNotications, setUpdateNotifications] = useState(false);  
 
   useEffect(() => {
     AuthClient.create(options.createOptions).then(async (client) => {
@@ -280,6 +284,8 @@ export const useAuthClient = (options = defaultOptions) => {
     isAuthenticated,
     favouritesUpdated,
     setFavouritesUpdated,
+    setUpdateNotifications,
+    updateNotications,
     ws,
     wsMessage,
     nfidlogin,

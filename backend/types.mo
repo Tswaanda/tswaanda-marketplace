@@ -9,7 +9,25 @@ import Nat32 "mo:base/Nat32";
 
 module {
 
-    // Types for products products
+    /***************************
+    *   ACCESS CONTROL  *
+    ****************************/
+
+    public type Role = {
+        #owner;
+        #admin;
+        #unauthorized;
+    };
+
+    public type Permission = {
+        #assign_role;
+        #lowest;
+    };
+
+    /***************************
+    *   PRODCUTS *
+    ****************************/
+
     public type Product = {
         id : Text;
         name : Text;
@@ -49,16 +67,17 @@ module {
         clientAddress : Text;
         clientAddress2 : Text;
         clientCountry : Text;
+        invoicePDF : Text;
         invoiceTitleLabel : Text;
         invoiceTitle : Text;
         invoiceDateLabel : Text;
         invoiceDate : Text;
         invoiceDueDateLabel : Text;
         invoiceDueDate : Text;
-        exportDocs: [Text];
-        shipmentDocs: [Text];
-        exportDocsVerified: Bool;
-        shipmentDocsVerified: Bool;
+        exportDocs : [Text];
+        shipmentDocs : [Text];
+        exportDocsVerified : Bool;
+        shipmentDocsVerified : Bool;
         invoiceStatus : {
             #paid;
             #unpaid;
@@ -67,9 +86,9 @@ module {
         orderStage : {
             #orderplaced;
             #purchased;
-            #shipped;
-            #delivered;
             #cancelled;
+            #shippment;
+            #fulfillment;
         };
         productLineDescription : Text;
         productLineQuantity : Text;

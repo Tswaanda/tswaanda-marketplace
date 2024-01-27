@@ -32,10 +32,10 @@ export default function Favorites({ openFavourites, setOpenFavourites }) {
   };
 
   useEffect(() => {
-    if (identity) {
+    if (backendActor) {
       getFavourites();
     }
-  }, [identity]);
+  }, [backendActor]);
 
   const handleRemove = async (id: string) => {
     try {

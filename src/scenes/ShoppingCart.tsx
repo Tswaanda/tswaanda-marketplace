@@ -14,9 +14,17 @@ import { toast } from "react-toastify";
 import { Loader } from "../components";
 import { useAuth } from "../hooks/ContextWrapper";
 import { sendOrderPlacedEmail } from "../utils/emails/orderPlacedUpdate";
-import { Customer, ProductOrder } from "../declarations/marketplace_backend/marketplace_backend.did";
+import {
+  Customer,
+  ProductOrder,
+} from "../declarations/marketplace_backend/marketplace_backend.did";
 import { getStatus } from "../hooks/wsUtils";
-import { AppMessage, MarketMessage, MarketOrderUpdate } from "../declarations/tswaanda_backend/tswaanda_backend.did";
+import {
+  AdminNotification,
+  AppMessage,
+  FromMarketMessage,
+  MarketOrderUpdate,
+} from "../declarations/tswaanda_backend/tswaanda_backend.did";
 
 const navigation = {
   pages: [
@@ -223,6 +231,7 @@ export default function ShoppingCart() {
           totalPrice: parseFloat(orderTotal),
           shippingEstimate: parseFloat(shippingEstimate),
           taxEstimate: parseFloat(taxEstimate),
+          invoicePDF: "",
           invoiceTitle: "Invoice",
           productLineQuantityAmount: String(product.price),
           exportDocsVerified: false,
@@ -253,7 +262,7 @@ export default function ShoppingCart() {
           taxLabel: "Tax",
           productLineQuantity: String(cartItem.quantity),
           invoiceTitleLabel: "Invoice",
-          orderStage:{ orderplaced: null },
+          orderStage: { orderplaced: null },
           shipmentDocs: [],
           invoiceDueDateLabel: "Due date",
           companyAddress: "123 Fake St.",
@@ -261,7 +270,7 @@ export default function ShoppingCart() {
           invoiceStatus: { unpaid: null },
           billTo: "Bill to",
           productLineDescription: product.fullDescription,
-          created: BigInt(timestamp)
+          created: BigInt(timestamp),
         };
         const res = await makeUpdates(product);
         if (!res) {
@@ -329,18 +338,26 @@ export default function ShoppingCart() {
   const sendOrderUpdateWSMessage = async (id: string) => {
     let message = getStatus("order_placed");
     if (identity) {
-      let ordermsg:MarketOrderUpdate = {
-        marketPlUserclientId: identity.getPrincipal().toString(),
-        orderId: id,
-        message: message.message,
-        timestamp: BigInt(Date.now()),
-      };
-      let mktMessage: MarketMessage = {
-        OrderUpdate: ordermsg,
-      };
       const msg: AppMessage = {
-        FromMarket: mktMessage,
+        FromMarket: {
+          OrderUpdate: {
+            message: message.message,
+          },
+        },
       };
+      let notification: AdminNotification = {
+        id: uuidv4(),
+        notification: {
+          OrderUpdate: {
+            marketPlUserclientId: identity.getPrincipal().toString(),
+            orderId: id,
+            message: message.message,
+          },
+        },
+        read: false,
+        created: BigInt(Date.now()),
+      };
+      await adminBackendActor.createAdminNotification(notification);
       ws.send(msg);
     } else {
       console.log("Identity not found");

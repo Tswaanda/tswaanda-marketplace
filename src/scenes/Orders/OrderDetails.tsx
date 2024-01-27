@@ -30,21 +30,37 @@ const OrderDetails = () => {
   };
 
   useEffect(() => {
-    // if (order) {
-    //   if (JSON.stringify(order.orderStage) === JSON.stringify({delivered : null})) {
-    //     setOrderStage("orderplaced");
-    //   } else if (JSON.stringify(order.orderStage) === JSON.stringify({purchased : null}))
-    //     setOrderStage("orderaccepted");
-    //   } else if (order.status === "orderrejected") {
-    //     setOrderStage("orderrejected");
-    //   } else if (order.status === "orderfulfilled") {
-    //     setOrderStage("orderfulfilled");
-    //   }
+    if (order) {
+      if (
+        JSON.stringify(order.orderStage) ===
+        JSON.stringify({ orderplaced: null })
+      ) {
+        setOrderStage("orderplaced");
+      } else if (
+        JSON.stringify(order.orderStage) === JSON.stringify({ purchased: null })
+      ) {
+        setOrderStage("purchased");
+      } else if (
+        JSON.stringify(order.orderStage) === JSON.stringify({ shipped: null })
+      ) {
+        setOrderStage("shipped");
+      } else if (
+        JSON.stringify(order.orderStage) === JSON.stringify({ delivered: null })
+      ) {
+        setOrderStage("delivered");
+      } else if (
+        JSON.stringify(order.orderStage) === JSON.stringify({ cancelled: null })
+      ) {
+        setOrderStage("cancelled");
+      } else {
+        setOrderStage("error");
+      }
+    }
   }, [order]);
 
   return (
-    <div>
-      <IFrame />
+    <div className="h-[1000px]">
+      {order && <IFrame {...{ orderStage, order }} />}
     </div>
   );
 };

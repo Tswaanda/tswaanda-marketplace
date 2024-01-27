@@ -24,15 +24,18 @@ export const processWsMessage = (message: AppMessage) => {
 
 export const getStatus = (status: string) => {
   if (status === "order_placed") {
-    let message: string = "A new order has been placed";
     let res = {
-      message: message,
+      message: "A new order has been placed",
     };
     return res;
   } else if (status === "kyc_created") {
-    let message: string = "A new KYC has been created";
     let res = {
-      message: message,
+      message: "A new KYC has been created",
+    };
+    return res;
+  } else if (status === "product_review") {
+    let res = {
+      message: "A new product review has been created",
     };
     return res;
   }
