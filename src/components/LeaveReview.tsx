@@ -6,6 +6,16 @@ import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import { useAuth } from "../hooks/ContextWrapper";
 import { reviewOnProductUpdate } from "../utils/emails/reviewUpdate";
+import { getStatus } from "../hooks/wsUtils";
+import {
+  AdminNotification,
+  AdminProductReviewUpdateNotification,
+  AppMessage,
+  FromMarketMessage,
+  MarketOrderUpdate,
+  ProductReview,
+  ProductReviewUpdate,
+} from "../declarations/tswaanda_backend/tswaanda_backend.did";
 
 type FormData = {
   review: string;
@@ -17,15 +27,14 @@ interface Response {
 }
 
 const LeaveReview = ({ setOpenReviewModal, product, getProductReviews }) => {
-
-  const {identity, backendActor, adminBackendActor} = useAuth();
+  const { identity, backendActor, adminBackendActor, ws } = useAuth();
   const [rating, setRating] = React.useState(0);
   const [userInfo, setUserInfo] = React.useState(null);
   const [submitting, setSubmitting] = React.useState(false);
   const [farmerInfo, setFarmerInfo] = React.useState(null);
 
   useEffect(() => {
-    getFarmerInfo()
+    getFarmerInfo();
   }, [product]);
 
   const getFarmerInfo = async () => {
@@ -58,7 +67,9 @@ const LeaveReview = ({ setOpenReviewModal, product, getProductReviews }) => {
     if (identity)
       (async () => {
         try {
-          const res: Response = await backendActor.getKYCRequest(identity.getPrincipal());
+          const res: Response = await backendActor.getKYCRequest(
+            identity.getPrincipal()
+          );
           if (res.err) {
             console.log(res.err);
           } else {
@@ -88,7 +99,7 @@ const LeaveReview = ({ setOpenReviewModal, product, getProductReviews }) => {
         });
       } else {
         setSubmitting(true);
-        const reviewData = {
+        const reviewData: ProductReview = {
           id: uuidv4(),
           productId: product.id,
           userName: userInfo.body[0].firstName,
@@ -98,12 +109,16 @@ const LeaveReview = ({ setOpenReviewModal, product, getProductReviews }) => {
           created: BigInt(Date.now()),
         };
         await adminBackendActor.addProductReview(reviewData);
-        await reviewOnProductUpdate(rating, data.review, farmerInfo, product)
-        toast.success("Review submitted successfully. Thank you for the feedback", {
-          autoClose: 5000,
-          position: "top-center",
-          hideProgressBar: true,
-        });
+        await reviewOnProductUpdate(rating, data.review, farmerInfo, product);
+        await sendpProductReviewUpdateWSMessage(reviewData);
+        toast.success(
+          "Review submitted successfully. Thank you for the feedback",
+          {
+            autoClose: 5000,
+            position: "top-center",
+            hideProgressBar: true,
+          }
+        );
         setSubmitting(false);
         getProductReviews();
         setOpenReviewModal(false);
@@ -111,6 +126,38 @@ const LeaveReview = ({ setOpenReviewModal, product, getProductReviews }) => {
     } catch (error) {
       setSubmitting(false);
       console.log(error);
+    }
+  };
+
+  const sendpProductReviewUpdateWSMessage = async (args: ProductReview) => {
+    let message = getStatus("product_review");
+    if (identity) {
+      const msg: AppMessage = {
+        FromMarket: {
+          ProductReview: {
+            message: message.message,
+          },
+        },
+      };
+      let notification: AdminNotification = {
+        id: uuidv4(),
+        notification: {
+          ProductReview: {
+            marketPlUserclientId: identity.getPrincipal().toString(),
+            message: message.message,
+            rating: args.rating,
+            review: args.review,
+            userName: args.userName,
+            userLastName: args.userLastName,
+          },
+        },
+        read: false,
+        created: BigInt(Date.now()),
+      };
+      await adminBackendActor.createAdminNotification(notification);
+      ws.send(msg);
+    } else {
+      console.log("Identity not found");
     }
   };
 

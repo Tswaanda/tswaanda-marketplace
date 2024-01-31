@@ -16,13 +16,14 @@ import { setIsRegistered } from "../../state/globalSlice";
 
 import Favorites from "./Favorites";
 import LoginModal from "./LoginModal";
-import Notifications from './Notifications';
+import Notifications from "../../scenes/Notifications/components/Notifications";
 
 import { useAuth } from "../../hooks/ContextWrapper";
 import KYCModal from "../KYCModal";
 import { Logo } from "../../assets";
 import { CustomerType } from "./types";
 import { CartItem } from "../../declarations/marketplace_backend/marketplace_backend.did";
+import { UserNotification } from "../../declarations/tswaanda_backend/tswaanda_backend.did";
 
 const user = {
   imageUrl: "./avatar.webp",
@@ -45,8 +46,20 @@ function classNames(...classes) {
 }
 
 const Navbar = () => {
-  const { logout, backendActor, identity, isAuthenticated } = useAuth();
+  const {
+    logout,
+    backendActor,
+    adminBackendActor,
+    identity,
+    isAuthenticated,
+    updateNotications,
+    setUpdateNotifications,
+    wsMessage,
+  } = useAuth();
   const [showKycModal, setShowKycModal] = useState(false);
+  const [userNotifications, setUserNotifications] = useState<
+    UserNotification[]
+  >([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -62,8 +75,6 @@ const Navbar = () => {
   const [userInfo, setUserInfo] = useState<CustomerType | null>(null);
 
   const [cartItems, setCartItems] = useState<CartItem | null>(null);
-
-  const [favoriteItems, setFavoriteItems] = useState();
 
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -109,10 +120,27 @@ const Navbar = () => {
     }
   };
 
+  const getUnreadNotification = async () => {
+    const res = await adminBackendActor.getUnreadUserNotifications();
+    setUserNotifications(res);
+  };
+
+  useEffect(() => {
+    if (updateNotications) {
+      getUnreadNotification();
+      setUpdateNotifications(false);
+    }
+  }, [updateNotications]);
+
+  useEffect(() => {
+    getUnreadNotification();
+  }, [wsMessage]);
+
   useEffect(() => {
     if (identity) {
       getMyKYC();
       getCartsNum();
+      getUnreadNotification();
     }
   }, [identity]);
 
@@ -301,30 +329,39 @@ const Navbar = () => {
                     <button onClick={() => setOpenFavourites(true)}>
                       <HeartIcon className="h-6 w-6" aria-hidden="true" />
                     </button>
+
                     {cartItems && (
                       <Link to="/shopping-cart">
-                        <div className="relative">
+                        <span className="relative inline-block">
                           <ShoppingCartIcon
                             className="h-6 w-6"
                             aria-hidden="true"
                           />
 
-                            <span className="absolute -top-3 -right-3 bg-primary text-white rounded-full px-2 py-1 text-xs">
-                              1
-                            </span>
-                          
-                        </div>
+                          <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+                            1
+                          </span>
+                        </span>
                       </Link>
                     )}
-                    <Link
-                      to={""}
+                    <button
                       className="flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 "
                       onClick={handleNotificationClick}
                     >
-                      <span className="sr-only">View notifications</span>
-                      <BellIcon className="h-6 w-6" aria-hidden="true" />
-                    </Link>
-                    {showNotifications && <Notifications handleCloseNotification={handleCloseNotification} />}
+                      <span className="relative inline-block">
+                        <BellIcon className="h-6 w-6" aria-hidden="true" />
+                        {userNotifications.length > 0 && (
+                          <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+                            {userNotifications.length}
+                          </span>
+                        )}
+                      </span>
+                    </button>
+                    {showNotifications && (
+                      <Notifications
+                        {...{ handleCloseNotification, userNotifications }}
+                      />
+                    )}
 
                     {/* Profile dropdown */}
                     <Menu as="div" className="relative ml-4 flex-shrink-0">

@@ -65,7 +65,7 @@ export default function LoginModal({ openModal, setOpenModal }) {
                     onClick={nfidlogin}
                     ref={cancelButtonRef}
                   >
-                    Google via NFID
+                    NFID
                   </button>
                 </div>
               </Dialog.Panel>

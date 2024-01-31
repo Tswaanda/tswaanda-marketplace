@@ -3,4 +3,5 @@ export type OrderStage =
   | "purchased"
   | "shipped"
   | "delivered"
-  | "cancelled";
+  | "cancelled"
+  | "error";

@@ -22,7 +22,10 @@ import {
 import { useAuth } from "../../hooks/ContextWrapper";
 import { Customer } from "../../declarations/marketplace_backend/marketplace_backend.did";
 import { getStatus } from "../../hooks/wsUtils";
-import { AppMessage, MarketKYCUpdate, MarketMessage } from "../../declarations/tswaanda_backend/tswaanda_backend.did";
+import {
+  AppMessage,
+  AdminNotification,
+} from "../../declarations/tswaanda_backend/tswaanda_backend.did";
 
 type FormData = {
   username: string;
@@ -42,7 +45,7 @@ type FormData = {
 };
 
 export default function KYC() {
-  const { backendActor, identity, ws } = useAuth();
+  const { backendActor, adminBackendActor, identity, ws } = useAuth();
 
   const [profilePhoto, setPP] = useState(null);
   const [kycID, setKYCID] = useState(null);
@@ -291,17 +294,25 @@ export default function KYC() {
   const sendKYCUpdateWSMessage = async () => {
     let message = getStatus("kyc_created");
     if (identity) {
-      let kycmsg:MarketKYCUpdate = {
-        marketPlUserclientId: identity.getPrincipal().toString(),
-        message: message.message,
-        timestamp: BigInt(Date.now()),
-      };
-      let mktMessage: MarketMessage = {
-        KYCUpdate: kycmsg,
-      };
       const msg: AppMessage = {
-        FromMarket: mktMessage,
+        FromMarket: {
+          KYCUpdate: {
+            message: message.message,
+          },
+        },
       };
+      let notification: AdminNotification = {
+        id: uuidv4(),
+        notification: {
+          KYCUpdate: {
+            marketPlUserclientId: identity.getPrincipal().toString(),
+            message: message.message,
+          },
+        },
+        read: false,
+        created: BigInt(Date.now()),
+      };
+      await adminBackendActor.createAdminNotification(notification);
       ws.send(msg);
     } else {
       console.log("Identity not found");

@@ -7,8 +7,10 @@ import Principal "mo:base/Principal";
 import Bool "mo:base/Bool";
 import List "mo:base/List";
 import Array "mo:base/Array";
+import AssocList "mo:base/AssocList";
+import Error "mo:base/Error";
 
-actor Tswaanda {
+shared ({ caller = initializer }) actor class TswaandaMarket() = this {
 
   type Product = Type.Product;
   type ProductOrder = Type.Order;
@@ -18,6 +20,8 @@ actor Tswaanda {
   type NewsLetterSubscription = Type.NewsLetterSubscription;
   type Stats = Type.Stats;
   type Farmer = Type.Farmer;
+  type Permission = Type.Permission;
+  type Role = Type.Role;
 
   var mapOfOrders = HashMap.HashMap<Text, ProductOrder>(0, Text.equal, Text.hash);
   var mapOfCustomers = HashMap.HashMap<Principal, Customer>(0, Principal.equal, Principal.hash);
@@ -33,6 +37,9 @@ actor Tswaanda {
 
   private stable var unverifiedEmailUsersEntries : [(Text, EmailVerificationSchema)] = [];
   private stable var newLetterSubscibers : [(Text, NewsLetterSubscription)] = [];
+
+  private stable var roles : AssocList.AssocList<Principal, Role> = List.nil();
+  private stable var role_requests : AssocList.AssocList<Principal, Role> = List.nil();
 
   // -----------------------------------------Canister upgrade methods---------------------------------------------------
   system func preupgrade() {
@@ -74,6 +81,12 @@ actor Tswaanda {
     };
   };
 
+  public shared query ({ caller }) func getAllCustomersPrincipals() : async [Principal] {
+    assert (isAdmin(caller));
+    let customersArray = Iter.toArray(mapOfCustomers.keys());
+    return customersArray;
+  };
+
   //-------------------------------- Orders methods-----------------------------------------------------------
 
   public shared func createOrder(order : ProductOrder) : async Bool {
@@ -110,12 +123,12 @@ actor Tswaanda {
   };
   public shared query func getShippedOrders() : async [ProductOrder] {
     let ordersArray = Iter.toArray(mapOfOrders.vals());
-    let pending = Array.filter<ProductOrder>(ordersArray, func order = order.orderStage == #shipped);
+    let pending = Array.filter<ProductOrder>(ordersArray, func order = order.orderStage == #shippment);
     return pending;
   };
   public shared query func getDeliveredOrders() : async [ProductOrder] {
     let ordersArray = Iter.toArray(mapOfOrders.vals());
-    let pending = Array.filter<ProductOrder>(ordersArray, func order = order.orderStage ==  #delivered);
+    let pending = Array.filter<ProductOrder>(ordersArray, func order = order.orderStage == #fulfillment);
     return pending;
   };
   public shared query func getCancelledOrders() : async [ProductOrder] {
@@ -130,14 +143,14 @@ actor Tswaanda {
     return size;
   };
 
-  public shared func updatePOrder(id : Text, order : ProductOrder) : async Bool {
-    switch (mapOfOrders.get(id)) {
+  public shared func updatePOrder(order : ProductOrder) : async Bool {
+    switch (mapOfOrders.get(order.orderId)) {
       case (null) {
         return false;
       };
       case (?result) {
         let updateOrder : ProductOrder = order;
-        ignore mapOfOrders.replace(id, updateOrder);
+        ignore mapOfOrders.replace(order.orderId, updateOrder);
         return true;
       };
     };
@@ -379,6 +392,90 @@ actor Tswaanda {
     };
 
     return stats;
+  };
+
+  /********************************
+    *  ACCESS CONTROL IMPL
+    *********************************/
+
+  // Determine if a principal has a role with permissions
+  func has_permission(pal : Principal, perm : Permission) : Bool {
+    let role = get_role(pal);
+    switch (role, perm) {
+      case (? #owner or ? #admin, _) true;
+      case (? #unauthorized, _) false;
+      case (_, _) false;
+    };
+  };
+
+  func principal_eq(a : Principal, b : Principal) : Bool {
+    return a == b;
+  };
+
+  func get_role(pal : Principal) : ?Role {
+    if (pal == initializer) {
+      ? #owner;
+    } else {
+      AssocList.find<Principal, Role>(roles, pal, principal_eq);
+    };
+  };
+
+  // Reject unauthorized user identities
+  func require_permission(pal : Principal, perm : Permission) : async () {
+    if (has_permission(pal, perm) == false) {
+      throw Error.reject("unauthorized");
+    };
+  };
+
+  public shared ({ caller }) func my_role() : async Text {
+    let role = get_role(caller);
+    switch (role) {
+      case (null) {
+        return "unauthorized";
+      };
+      case (? #owner) {
+        return "owner";
+      };
+      case (? #admin) {
+        return "admin";
+      };
+      case (? #unauthorized) {
+        return "unauthorized";
+      };
+    };
+  };
+
+  func isAuthorized(pal : Principal) : Bool {
+    let role = get_role(pal);
+    switch (role) {
+      case (? #owner or ? #admin) true;
+      case (_) false;
+    };
+  };
+
+  func isAdmin(pal : Principal) : Bool {
+    let role = get_role(pal);
+    switch (role) {
+      case (? #owner or ? #admin) true;
+      case (_) false;
+    };
+  };
+
+  // Assign a new role to a principal
+  public shared ({ caller }) func assign_role(assignee : Principal, new_role : ?Role) : async () {
+    await require_permission(caller, #assign_role);
+
+    switch new_role {
+      case (? #owner) {
+        throw Error.reject("Cannot assign anyone to be the owner");
+      };
+      case (_) {};
+    };
+    if (assignee == initializer) {
+      throw Error.reject("Cannot assign a role to the canister owner");
+    };
+    roles := AssocList.replace<Principal, Role>(roles, assignee, principal_eq, new_role).0;
+    role_requests := AssocList.replace<Principal, Role>(role_requests, assignee, principal_eq, null).0;
   };
 
 };

@@ -1,77 +1,18 @@
 import { Link, useNavigate } from "react-router-dom";
+import { ProductOrder } from "../../../declarations/marketplace_backend/marketplace_backend.did";
+import { FC } from "react";
+import { formatDate } from "../../../utils/time";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const _orders = [
-  {
-    dateCreated: 20240101,
-    orderId: "order12345",
-    orderNumber: "12345",
-    orderOwner: "ownerID12345",
-    orderProducts: {
-      description: "High-Quality Wireless Headphones",
-      id: "prod123",
-      image: "imageURL_headphones.jpg",
-      name: "Wireless Headphones",
-      price: 150.00,
-      quantity: 2
-    },
-    shippingEstimate: 3.5,
-    status: "Shipped",
-    step: 3,
-    subtotal: 300.00,
-    taxEstimate: 22.50,
-    totalPrice: 322.50,
-    userEmail: "user1@example.com"
-  },
-  {
-    dateCreated: 20240102,
-    orderId: "order12346",
-    orderNumber: "12346",
-    orderOwner: "ownerID12346",
-    orderProducts: {
-      description: "Compact Bluetooth Speaker",
-      id: "prod124",
-      image: "imageURL_speaker.jpg",
-      name: "Bluetooth Speaker",
-      price: 75.00,
-      quantity: 1
-    },
-    shippingEstimate: 4.0,
-    status: "Processing",
-    step: 1,
-    subtotal: 75.00,
-    taxEstimate: 5.63,
-    totalPrice: 80.63,
-    userEmail: "user2@example.com"
-  },
-  {
-    dateCreated: 20240103,
-    orderId: "order12347",
-    orderNumber: "12347",
-    orderOwner: "ownerID12347",
-    orderProducts: {
-      description: "Ergonomic Wireless Mouse",
-      id: "prod125",
-      image: "imageURL_mouse.jpg",
-      name: "Wireless Mouse",
-      price: 35.00,
-      quantity: 3
-    },
-    shippingEstimate: 2.0,
-    status: "Awaiting Payment",
-    step: 0,
-    subtotal: 105.00,
-    taxEstimate: 7.88,
-    totalPrice: 112.88,
-    userEmail: "user3@example.com"
-  }
-];
+type OrdersListProps = {
+  orders: ProductOrder[];
+};
 
 
-const OrdersList = (orders, activate) => {
+const OrdersList: FC<OrdersListProps> = ({orders}) => {
   const navigate = useNavigate();
 
   const gotToOrder = (orderId:any) => {
@@ -80,7 +21,7 @@ const OrdersList = (orders, activate) => {
 
   return (
     <>
-      {_orders?.map((order) => (
+      {orders?.map((order) => (
         <div key={order.orderId} className="bg-gray-50">
           <div className="mx-auto max-w-2xl pt-16 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
             <div className="space-y-2 px-4 sm:flex sm:items-baseline sm:justify-between sm:space-y-0 sm:px-0">
@@ -104,7 +45,7 @@ const OrdersList = (orders, activate) => {
                   dateTime="2021-03-22"
                   className="font-medium text-gray-900"
                 >
-                  {order.dateCreated}
+                  {formatDate(Number(order.created))}
                 </time>
               </p>
               <a
@@ -158,7 +99,7 @@ const OrdersList = (orders, activate) => {
                             </dt>
                             <dd className="mt-3 space-y-3 text-gray-500">
                               <p>{order.userEmail}</p>
-                              <p>{order.status}</p>
+                              {/* <p>{order.status}</p> */}
                               <button
                                 type="button"
                                 className="font-medium text-primary hover:text-indigo-500"
@@ -177,7 +118,7 @@ const OrdersList = (orders, activate) => {
                         {order.orderProducts.id} {" "}
                         {/* <time dateTime={order.orderProducts.datetime}>{order.orderProducts.date}</time> */}
                       </p>
-                      <div className="mt-6" aria-hidden="true">
+                      {/* <div className="mt-6" aria-hidden="true">
                         <div className="overflow-hidden rounded-full bg-gray-200">
                           <div
                             className="h-2 rounded-full bg-primary"
@@ -213,7 +154,7 @@ const OrdersList = (orders, activate) => {
                             Delivered
                           </div>
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
               </div>
