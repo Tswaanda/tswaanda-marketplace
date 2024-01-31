@@ -26,12 +26,12 @@ const IFrame: FC<Props> = ({ orderStage, order }) => {
       switch (receivedInterfacesPayload.type) {
         case "message":
           // to receive the user input
-          // console.log("recieved message".toUpperCase(), receivedInterfacesPayload.value)
+          console.log("recieved message".toUpperCase(), receivedInterfacesPayload.value)
           switch (receivedInterfacesPayload.value) {
-            case "Invoice downloaded":
+            case "Offer accepted":
               handleInvoiceDownloaded();
               break;
-            case "Thank you for your purchase.":
+            case "Payment made":
               handlePurchased();
               break;
             case "shipment":

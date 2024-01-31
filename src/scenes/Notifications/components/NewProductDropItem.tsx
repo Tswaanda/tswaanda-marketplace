@@ -18,9 +18,7 @@ const NewProductDropItem: FC<Props> = ({
       <h1 className="text-sm font-semibold text-gray-800">New Product Drop</h1>
       <div className="flex items-center justify-start gap-3">
         <img
-          src={
-            "https://72ycx-4qaaa-aaaal-qcana-cai.raw.icp0.io/asset/bd2506f6-eab-32f-6a8-038c54d39b42"
-          }
+          src={_notification.image}
           className="w-[50px] h-[50px] flex-shrink-0"
           alt="product image"
         />

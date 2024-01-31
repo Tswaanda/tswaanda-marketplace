@@ -11,7 +11,7 @@ import { GroundNuts } from "../assets/assets";
 import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
-import { Loader } from "../components";
+import { Button, Loader } from "../components";
 import { useAuth } from "../hooks/ContextWrapper";
 import { sendOrderPlacedEmail } from "../utils/emails/orderPlacedUpdate";
 import {
@@ -285,14 +285,6 @@ export default function ShoppingCart() {
         await backendActor.createOrder(order);
         sendOrderUpdateWSMessage(order.orderId);
         await backendActor.removeFromCart(identity.getPrincipal());
-        toast.success(
-          "Order successfully created. Head over to the orders page to track your order's progress.",
-          {
-            autoClose: 10000,
-            position: "top-center",
-            hideProgressBar: true,
-          }
-        );
         setCreatingOrder(false);
         navigate(`/order/${order.orderId}`);
       }
@@ -366,6 +358,10 @@ export default function ShoppingCart() {
 
   return (
     <div className="bg-white">
+      {/* <button onClick={() => sendOrderUpdateWSMessage("123")}>
+        Send Message
+      </button> */}
+
       {!product && loading && (
         <div className="flex justify-center items-center px-7 lg:px-28 pt-8 pb-10 h-[70vh]">
           <Loader />

@@ -29,6 +29,8 @@ export default function Notifications() {
     }
   };
 
+  console.log("Notifications: ", notifications);
+
   return (
     <div>
       <div className="mt-6 flow-root">

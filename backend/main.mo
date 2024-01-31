@@ -81,7 +81,7 @@ shared ({ caller = initializer }) actor class TswaandaMarket() = this {
     };
   };
 
-  public shared query ({caller}) func getAllCustomersPrincipals() : async [Principal] {
+  public shared query ({ caller }) func getAllCustomersPrincipals() : async [Principal] {
     assert (isAdmin(caller));
     let customersArray = Iter.toArray(mapOfCustomers.keys());
     return customersArray;

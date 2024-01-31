@@ -14,6 +14,12 @@ export const processWsMessage = (message: AppMessage) => {
             message: message.FromAdmin.KYCUpdate.message,
         }
       return res;
+    } else if ("NewProductDrop") {
+        let res = {
+            title : "Tswaanda New Product Drop",
+            message: message.FromAdmin.NewProductDrop.productName
+        }
+      return res;
     }
   } else {
     return {

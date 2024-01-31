@@ -10,8 +10,6 @@ type Props = {
 
 const Notifications: FC<Props> = ({handleCloseNotification, userNotifications}) => {
 
-   
-
     const recentNotifications = userNotifications.slice(0, 5);
 
 return (
