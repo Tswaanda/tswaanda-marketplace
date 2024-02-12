@@ -62,7 +62,7 @@ shared ({ caller = initializer }) actor class TswaandaMarket() = this {
 
   //-----------------------------Admin intercanister calls------------------------------------------------------
 
-  let adminInterface = actor ("bw4dl-smaaa-aaaaa-qaacq-cai") : actor {
+  let adminInterface = actor ("56r5t-tqaaa-aaaal-qb4gq-cai") : actor {
     getAllProducts : shared query () -> async [Product];
     filterProducts : shared [Text] -> async [Product];
     getFarmerByEmail : shared (Text) -> async Result.Result<Farmer, Text>;

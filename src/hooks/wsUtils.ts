@@ -3,22 +3,22 @@ import { AppMessage } from "../declarations/tswaanda_backend/tswaanda_backend.di
 export const processWsMessage = (message: AppMessage) => {
   if ("FromAdmin" in message) {
     if ("OrderUpdate" in message.FromAdmin) {
-        let res = {
-            title : "Tswaanda Order Update",
-            message: message.FromAdmin.OrderUpdate.message,
-        }
+      let res = {
+        title: "Tswaanda Order Update",
+        message: message.FromAdmin.OrderUpdate.message,
+      };
       return res;
     } else if ("KYCUpdate" in message.FromAdmin) {
-        let res = {
-            title : "Tswaanda KYC Update",
-            message: message.FromAdmin.KYCUpdate.message,
-        }
+      let res = {
+        title: "Tswaanda KYC Update",
+        message: message.FromAdmin.KYCUpdate.message,
+      };
       return res;
     } else if ("NewProductDrop") {
-        let res = {
-            title : "Tswaanda New Product Drop",
-            message: message.FromAdmin.NewProductDrop.productName
-        }
+      let res = {
+        title: "Tswaanda New Product Drop",
+        message: message.FromAdmin.NewProductDrop.productName,
+      };
       return res;
     }
   } else {
@@ -32,6 +32,11 @@ export const getStatus = (status: string) => {
   if (status === "order_placed") {
     let res = {
       message: "A new order has been placed",
+    };
+    return res;
+  } else if (status === "anon_created") {
+    let res = {
+      message: "A new anonymous user has been created",
     };
     return res;
   } else if (status === "kyc_created") {

@@ -6,10 +6,13 @@ import { Customer } from "../declarations/marketplace_backend/marketplace_backen
 import { v4 as uuid } from "uuid";
 import { ThreeCircles } from "react-loader-spinner";
 import { useNavigate } from "react-router";
+import { getStatus } from "../hooks/wsUtils";
+import { AdminNotification, AppMessage } from "../declarations/tswaanda_backend/tswaanda_backend.did";
+import { v4 as uuidv4 } from "uuid";
 
 export default function KYCModal({ show, onClose }) {
   const navigate = useNavigate();
-  const { backendActor, identity } = useAuth();
+  const { backendActor, identity, adminBackendActor, ws } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const cancelButtonRef = useRef(null);
@@ -25,11 +28,40 @@ export default function KYCModal({ show, onClose }) {
       };
 
       await backendActor.createKYCRequest(anonUser);
+      await sendKYCUpdateWSMessage();
       setLoading(false);
       onClose();
     } catch (error) {
       console.log("Error when saving anon user info", error);
       setLoading(false);
+    }
+  };
+
+  const sendKYCUpdateWSMessage = async () => {
+    let message = getStatus("anon_created");
+    if (identity) {
+      const msg: AppMessage = {
+        FromMarket: {
+          KYCUpdate: {
+            message: message.message,
+          },
+        },
+      };
+      let notification: AdminNotification = {
+        id: uuidv4(),
+        notification: {
+          KYCUpdate: {
+            marketPlUserclientId: identity.getPrincipal().toString(),
+            message: message.message,
+          },
+        },
+        read: false,
+        created: BigInt(Date.now()),
+      };
+      await adminBackendActor.createAdminNotification(notification);
+      ws.send(msg);
+    } else {
+      console.log("Identity not found");
     }
   };
 
