@@ -16,7 +16,6 @@
       "frontend": {}
     },
     "marketplace_frontend": {
-      "dependencies": ["marketplace_backend"],
       "type": "assets",
       "source": ["dist/"]
     }

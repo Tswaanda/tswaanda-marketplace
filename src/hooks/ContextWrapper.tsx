@@ -31,9 +31,9 @@ import {
   AppMessage,
 } from "../declarations/tswaanda_backend/tswaanda_backend.did";
 import IcWebSocket from "ic-websocket-js";
-import { handleWebSocketMessage } from "../service/main.js";
 import { processWsMessage } from "./wsUtils";
 import { _SERVICE as MKTSERVICE } from "../declarations/marketplace_backend/marketplace_backend.did";
+import addNotification from "react-push-notification";
 
 const network = process.env.DFX_NETWORK || "local";
 
@@ -271,6 +271,17 @@ export const useAuthClient = (options = defaultOptions) => {
       setWsMessage(recievedMessage);
     };
   }, [ws]);
+
+  async function handleWebSocketMessage(msg: any) {
+    addNotification({
+      title: msg.title,
+      subtitle: "Notification",
+      message: msg.message,
+      theme: "darkblue",
+      native: true,
+    });
+  }
+
 
   const logout = async () => {
     await authClient.logout();
